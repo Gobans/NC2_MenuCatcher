@@ -310,6 +310,7 @@
 				DEVELOPMENT_TEAM = 54QH6LCWDM;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Menutrition/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Your camera is used to scan text";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -338,6 +339,7 @@
 				DEVELOPMENT_TEAM = 54QH6LCWDM;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Menutrition/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Your camera is used to scan text";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
