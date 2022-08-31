@@ -11,6 +11,7 @@
 		9103E3F528BDB0AB0011F3E8 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 9103E3F428BDB0AB0011F3E8 /* SQLite */; };
 		9103E3F728BDBDCF0011F3E8 /* FoodDB.sqlite3 in Resources */ = {isa = PBXBuildFile; fileRef = 9103E3F628BDBDCF0011F3E8 /* FoodDB.sqlite3 */; };
 		9103E3F928BDD7620011F3E8 /* FoodCategoryClassfier.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 9103E3F828BDD7620011F3E8 /* FoodCategoryClassfier.mlpackage */; };
+		911A0B4128BEFB2A007AC11E /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911A0B4028BEFB2A007AC11E /* Regex.swift */; };
 		915CE6C228B73AFA0009CBD6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */; };
 		915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */; };
 		915CE6C628B73AFA0009CBD6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C528B73AFA0009CBD6 /* ViewController.swift */; };
@@ -23,6 +24,7 @@
 		9103E3F128BDACCC0011F3E8 /* Sqlite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sqlite.swift; sourceTree = "<group>"; };
 		9103E3F628BDBDCF0011F3E8 /* FoodDB.sqlite3 */ = {isa = PBXFileReference; lastKnownFileType = file; path = FoodDB.sqlite3; sourceTree = "<group>"; };
 		9103E3F828BDD7620011F3E8 /* FoodCategoryClassfier.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = FoodCategoryClassfier.mlpackage; sourceTree = "<group>"; };
+		911A0B4028BEFB2A007AC11E /* Regex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		915CE6BE28B73AFA0009CBD6 /* Menutrition.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Menutrition.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 			children = (
 				9103E3F828BDD7620011F3E8 /* FoodCategoryClassfier.mlpackage */,
 				9103E3F128BDACCC0011F3E8 /* Sqlite.swift */,
+				911A0B4028BEFB2A007AC11E /* Regex.swift */,
 				915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */,
 				915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */,
 				915CE6C528B73AFA0009CBD6 /* ViewController.swift */,
@@ -161,6 +164,7 @@
 				9103E3F228BDACCC0011F3E8 /* Sqlite.swift in Sources */,
 				9103E3F928BDD7620011F3E8 /* FoodCategoryClassfier.mlpackage in Sources */,
 				915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */,
+				911A0B4128BEFB2A007AC11E /* Regex.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -106,7 +106,16 @@ final class ViewController: UIViewController {
     
     private func configureTargets() {
         scanButton.addTarget(self, action: #selector(startScanning), for: .touchUpInside)
-        catchButton.addTarget(self, action: #selector(captureText), for: .touchUpInside)
+        catchButton.addTarget(self, action: #selector(catchText), for: .touchUpInside)
+    }
+    
+    private func endScan(splitedStringArray: [String]) {
+        
+    }
+    
+    private func processFoodArray(_ splitedStringArray: [String]) -> [String] {
+        
+        return ["some"]
     }
     
     @objc private func startScanning() {
@@ -116,9 +125,10 @@ final class ViewController: UIViewController {
         }
     }
     
-    @objc private func captureText() {
+    @objc private func catchText() {
         guard let item = currentItems.first else { return } // recognizesMultipleItems 를 사용하지않기 떄문에 하나만 선택
         catchLabel.text = item.value
+        let splitedStringArray:[String] = item.value.split(separator: "\n").map{String($0)}
         dataScannerViewController.dismiss(animated: true)
         dataScannerViewController.stopScanning()
     }
