@@ -23,6 +23,8 @@ final class ViewController: UIViewController {
     
     let textProcessing = TextProcessing()
     
+    let sqlite = Sqlite.shared
+    
     lazy var dataScannerViewController: DataScannerViewController = {
         let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: false, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: true, isHighlightingEnabled: true)
         viewController.delegate = self
@@ -125,8 +127,19 @@ final class ViewController: UIViewController {
             print("predictedTable: \(predictedTable)")
             var sortedPredictedTable = predictedTable.sorted{ $0.value < $1.value }
             print("sortedPredictedTable: \(sortedPredictedTable)")
+            guard let table = sortedPredictedTable.popLast()?.key else { return }
+            print("table: \(table)")
             while(!sortedPredictedTable.isEmpty) {
-                let table = sortedPredictedTable.popLast()
+                guard let table = sortedPredictedTable.popLast()?.key else { return }
+                let dbFoodNameArray = Sqlite.shared.fetchFoodNameByTable(table)
+                print("dbFoodNameArray: \(dbFoodNameArray)")
+                let result = textProcessing.findSimliarWord(baseString: foodName, otehrStringArray: dbFoodNameArray)
+                let vaildFoodName = result.0
+                let candidateFoodNameArray: [String] = result.1
+                if vaildFoodName != "" {
+                    print(vaildFoodName)
+                    break
+                }
             }
         }
     }
