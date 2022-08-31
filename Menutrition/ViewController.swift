@@ -20,6 +20,9 @@ final class ViewController: UIViewController {
             fatalError()
         }
     }
+    
+    let textProcessing = TextProcessing()
+    
     lazy var dataScannerViewController: DataScannerViewController = {
         let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: false, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: true, isHighlightingEnabled: true)
         viewController.delegate = self
@@ -110,12 +113,22 @@ final class ViewController: UIViewController {
     }
     
     private func endScan(splitedStringArray: [String]) {
-        
-    }
-    
-    private func processFoodArray(_ splitedStringArray: [String]) -> [String] {
-        
-        return ["some"]
+        var foodArray: [String] = []
+        for phase in splitedStringArray {
+            if textProcessing.isValidWord(phase) {
+                foodArray.append(phase)
+            }
+        }
+        for foodName in foodArray {
+            print("foodName: \(foodName)")
+            let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 3)
+            print("predictedTable: \(predictedTable)")
+            var sortedPredictedTable = predictedTable.sorted{ $0.value < $1.value }
+            print("sortedPredictedTable: \(sortedPredictedTable)")
+            while(!sortedPredictedTable.isEmpty) {
+                let table = sortedPredictedTable.popLast()
+            }
+        }
     }
     
     @objc private func startScanning() {
@@ -129,6 +142,7 @@ final class ViewController: UIViewController {
         guard let item = currentItems.first else { return } // recognizesMultipleItems 를 사용하지않기 떄문에 하나만 선택
         catchLabel.text = item.value
         let splitedStringArray:[String] = item.value.split(separator: "\n").map{String($0)}
+        endScan(splitedStringArray: splitedStringArray)
         dataScannerViewController.dismiss(animated: true)
         dataScannerViewController.stopScanning()
     }

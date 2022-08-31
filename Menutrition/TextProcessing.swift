@@ -22,15 +22,70 @@ extension CharacterSet{
 
 final class TextProcessing {
     
+    private let hangul: Hangul = Hangul()
+    
     enum Decomposition {
         case basic
         case jamo
         case consonant
     }
     
-    static var hashDic: [String:String] = [:]
+    func findSimliarWord(baseString: String, otehrStringArray: [String]) -> (String, [String]){
+        var resultString: String = ""
+        var candidateArray: [String] = []
+        var precedingCandidateArray: [(String, Float)] = []
+        var trailingCandidateArray: [String] = []
+        for otherString in otehrStringArray {
+            let consonantResultCost: Float = levenshtein(base: baseString, other: otherString, mode: .consonant)
+            if consonantResultCost <= 1 {
+                let jamoResultCost: Float = levenshtein(base: baseString, other: otherString, mode: .jamo)
+                if jamoResultCost < 1 {
+                    resultString = otherString
+                    break
+                } else {
+                    precedingCandidateArray.append((otherString, jamoResultCost))
+                }
+            } else if consonantResultCost <= 3 {
+                trailingCandidateArray.append(otherString)
+            }
+        }
+        while (!trailingCandidateArray.isEmpty && precedingCandidateArray.count < 5) {
+            if let trailingCandidateString = trailingCandidateArray.popLast() {
+                let jamoResultCost: Float = levenshtein(base: baseString, other: trailingCandidateString, mode: .jamo)
+                precedingCandidateArray.append((trailingCandidateString, jamoResultCost))
+            }
+        }
+        if !precedingCandidateArray.isEmpty {
+            precedingCandidateArray.sort(by: {$0.1 > $1.1})
+            while (!precedingCandidateArray.isEmpty && candidateArray.count < 5) {
+                if let similarItem = precedingCandidateArray.popLast() {
+                    candidateArray.append(similarItem.0)
+                }
+            }
+        }
+        if resultString == "" && !candidateArray.isEmpty {
+            resultString = candidateArray.removeFirst()
+        }
+        return (resultString, candidateArray)
+    }
     
-    private static func substitution_cost(c1: String, c2: String, mode: Decomposition, baseLength: Float) -> Float {
+    func isValidWord(_ phase: String) -> Bool {
+        if phase == "" { return false }
+        let wordRegEx = "(?=.*[가-힣])"
+        let isContainHangul = phase.range(of: wordRegEx, options: .regularExpression) != nil
+        if !isContainHangul { return false }
+        var spacingCount:Int = 0
+        for char in phase {
+            if char == " " {
+                spacingCount += 1
+                if spacingCount == 4 { return false }
+            }
+        }
+        return true
+    }
+    
+    
+    private func substitution_cost(c1: String, c2: String, mode: Decomposition, baseLength: Float) -> Float {
         switch mode {
         case .basic:
             return 1
@@ -38,16 +93,16 @@ final class TextProcessing {
             if c1 == c2 {
                 return 0
             }
-            return TextProcessing.levenshtein(base: Hangul.getJamo(c1), other: Hangul.getJamo(c2), mode: .basic)/3
+            return levenshtein(base: hangul.getJamo(c1), other: hangul.getJamo(c2), mode: .basic)/3
         case .consonant:
             if c1 == c2 {
                 return 0
             }
-            return TextProcessing.levenshtein(base: Hangul.getConsonant(c1), other: Hangul.getConsonant(c2), mode: .basic)
+            return levenshtein(base: hangul.getConsonant(c1), other: hangul.getConsonant(c2), mode: .basic)
         }
     }
     
-    static func levenshtein(base: String, other: String, mode: Decomposition) -> Float {
+    func levenshtein(base: String, other: String, mode: Decomposition) -> Float {
         let bCount = base.count
         let oCount = other.count
         
@@ -86,41 +141,41 @@ final class TextProcessing {
         return mat[bCount][oCount]
     }
     
-    private class Hangul {
+    private final class Hangul {
         // UTF-8 기준
-        static let INDEX_HANGUL_START:UInt32 = 44032  // "가"
-        static let INDEX_HANGUL_END:UInt32 = 55199    // "힣"
+        private let INDEX_HANGUL_START:UInt32 = 44032  // "가"
+        private let INDEX_HANGUL_END:UInt32 = 55199    // "힣"
         
-        static let CYCLE_CHO :UInt32 = 588
-        static let CYCLE_JUNG :UInt32 = 28
+        private let CYCLE_CHO :UInt32 = 588
+        private let CYCLE_JUNG :UInt32 = 28
         
-        static let CHO = [
+        private let CHO = [
             "ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ",
             "ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"
         ]
         
-        static let JUNG = [
+        private let JUNG = [
             "ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ", "ㅔ","ㅕ", "ㅖ", "ㅗ", "ㅘ",
             "ㅙ", "ㅚ","ㅛ", "ㅜ", "ㅝ", "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ",
             "ㅣ"
         ]
         
-        static let JONG = [
+        private let JONG = [
             "","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ",
             "ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ",
             "ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"
         ]
         
-        static let JONG_DOUBLE = [
+        private let JONG_DOUBLE = [
             "ㄳ":"ㄱㅅ","ㄵ":"ㄴㅈ","ㄶ":"ㄴㅎ","ㄺ":"ㄹㄱ","ㄻ":"ㄹㅁ",
             "ㄼ":"ㄹㅂ","ㄽ":"ㄹㅅ","ㄾ":"ㄹㅌ","ㄿ":"ㄹㅍ","ㅀ":"ㄹㅎ",
             "ㅄ":"ㅂㅅ"
         ]
         
-        private static var jamoHashTable: [String:String] = [:]
-        private static var consonantHashTable: [String:String] = [:]
+        private var jamoHashTable: [String:String] = [:]
+        private var consonantHashTable: [String:String] = [:]
         
-        class func getJamo(_ input: String) -> String {
+        func getJamo(_ input: String) -> String {
             // hashing
             guard let hashJamo = jamoHashTable[input] else {
                 var jamo = ""
@@ -134,7 +189,7 @@ final class TextProcessing {
             return hashJamo
         }
         
-        class func getConsonant(_ input: String) -> String {
+        func getConsonant(_ input: String) -> String {
             // hashing
             guard let hashConsonant = consonantHashTable[input] else {
                 var consonant = ""
@@ -149,7 +204,7 @@ final class TextProcessing {
         }
         
         
-        private class func getJamoFromOneSyllable(_ n: UnicodeScalar) -> String?{
+        private func getJamoFromOneSyllable(_ n: UnicodeScalar) -> String?{
             if CharacterSet.modernHangul.contains(n){
                 let index = n.value - INDEX_HANGUL_START
                 let cho = CHO[Int(index / CYCLE_CHO)]
@@ -164,7 +219,7 @@ final class TextProcessing {
             }
         }
         
-        private class func getConsonantFromOneSyllable(_ n: UnicodeScalar) -> String?{
+        private func getConsonantFromOneSyllable(_ n: UnicodeScalar) -> String?{
             if CharacterSet.modernHangul.contains(n){
                 let index = n.value - INDEX_HANGUL_START
                 let cho = CHO[Int(index / CYCLE_CHO)]
@@ -174,6 +229,4 @@ final class TextProcessing {
             }
         }
     }
-    
-    
 }
