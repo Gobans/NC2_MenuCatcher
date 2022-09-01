@@ -29,13 +29,19 @@ final class ViewController: UIViewController {
     let sqlite = Sqlite.shared
     
     lazy var dataScannerViewController: DataScannerViewController = {
-        let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: false, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: true, isHighlightingEnabled: true)
+        let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: true, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: true, isHighlightingEnabled: true)
         viewController.delegate = self
         return viewController
     }()
     
-    lazy var scanButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "text.viewfinder") , style: .plain, target: self, action: #selector(startScanning))
+    lazy var multiScanButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(systemName: "text.viewfinder") , style: .plain, target: self, action: #selector(startMultipleScanning))
+        button.tintColor = .systemBlue
+        return button
+    }()
+    
+    lazy var singleScanButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(systemName: "viewfinder") , style: .plain, target: self, action: #selector(startSinggleScanning))
         button.tintColor = .systemBlue
         return button
     }()
@@ -79,7 +85,7 @@ final class ViewController: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = .white
-        navigationItem.rightBarButtonItem = scanButton
+        navigationItem.rightBarButtonItems = [singleScanButton, multiScanButton]
         navigationItem.leftBarButtonItem = deleteButton
         navigationItem.title = "Menu Catcher"
         configureSubViews()
@@ -132,12 +138,14 @@ final class ViewController: UIViewController {
         var foodArray: [String] = []
         for phase in splitedStringArray {
             if textProcessing.isValidWord(phase) {
+                print(phase)
                 foodArray.append(phase)
             }
         }
         for foodName in foodArray {
             let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 3)
             let sortedPredictedTable = predictedTable.sorted{ $0.value > $1.value }
+            print(sortedPredictedTable)
             Task {
                 if var foodData = await fetchFoodDataFromDB(sortedPredictedTable: sortedPredictedTable, foodName: foodName) {
                     foodData.recognizedText = foodName
@@ -163,7 +171,14 @@ final class ViewController: UIViewController {
         return nil
     }
     
-    @objc private func startScanning() {
+    @objc private func startMultipleScanning() {
+        if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
+            present(dataScannerViewController, animated: true)
+            try? self.dataScannerViewController.startScanning()
+        }
+    }
+    
+    @objc private func startSinggleScanning() {
         if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
             present(dataScannerViewController, animated: true)
             try? self.dataScannerViewController.startScanning()
@@ -171,8 +186,14 @@ final class ViewController: UIViewController {
     }
     
     @objc private func catchText() {
-        guard let item = currentItems.first else { return } // recognizesMultipleItems 를 사용하지않기 떄문에 하나만 선택
-        let splitedStringArray:[String] = item.value.split(separator: "\n").map{String($0)}
+        var splitedStringArray: [String] = []
+        for item in currentItems {
+            let tempStringArray:[String] = item.value.split(separator: "\n").map{String($0)}
+            for tempString in tempStringArray {
+                splitedStringArray.append(tempString)
+            }
+        }
+//        let splitedStringArray:[String] = item.value.split(separator: "\n").map{String($0)}
         endScan(splitedStringArray: splitedStringArray)
         dataScannerViewController.dismiss(animated: true)
         dataScannerViewController.stopScanning()
@@ -228,7 +249,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
         let foodInfo = foodDataArray[indexPath.row]
         cell.foodNameLabel.text = foodInfo.name
         cell.recognizedTextLabel.text = "인식된 text: \(foodInfo.recognizedText)"
-        let tempString = "1회 제공량: \(String(foodInfo.serving))\(foodInfo.unit)\n열량: \(String(foodInfo.energy))\n단백질: \(foodInfo.protein)\n지방: \(foodInfo.fat)\n탄수화물: \(foodInfo.carbohydrate)\n당류: \(foodInfo.sugar)\n카페인: \(foodInfo.caffeine)"
+        let tempString = "1회 제공량: \(String(foodInfo.serving))\(foodInfo.unit)\n열량: \(String(foodInfo.energy)) kcal\n단백질: \(foodInfo.protein)g\n지방: \(foodInfo.fat)g\n탄수화물: \(foodInfo.carbohydrate)g\n당류: \(foodInfo.sugar)g\n카페인: \(foodInfo.caffeine)mg"
         cell.nutritionLabel.text = tempString
         return cell
     }
