@@ -67,6 +67,8 @@ final class ViewController: UIViewController {
             }
         }
     }
+    
+    var foodDataArray: [FoodData] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -122,26 +124,30 @@ final class ViewController: UIViewController {
             }
         }
         for foodName in foodArray {
-            print("foodName: \(foodName)")
             let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 3)
-            print("predictedTable: \(predictedTable)")
-            var sortedPredictedTable = predictedTable.sorted{ $0.value < $1.value }
-            print("sortedPredictedTable: \(sortedPredictedTable)")
-            guard let table = sortedPredictedTable.popLast()?.key else { return }
-            print("table: \(table)")
-            while(!sortedPredictedTable.isEmpty) {
-                guard let table = sortedPredictedTable.popLast()?.key else { return }
-                let dbFoodNameArray = Sqlite.shared.fetchFoodNameByTable(table)
-                print("dbFoodNameArray: \(dbFoodNameArray)")
-                let result = textProcessing.findSimliarWord(baseString: foodName, otehrStringArray: dbFoodNameArray)
-                let vaildFoodName = result.0
-                let candidateFoodNameArray: [String] = result.1
-                if vaildFoodName != "" {
-                    print(vaildFoodName)
-                    break
-                }
+            let sortedPredictedTable = predictedTable.sorted{ $0.value > $1.value }
+            Task {
+                let foodData = await fetchFoodDataFromDB(sortedPredictedTable: sortedPredictedTable, foodName: foodName)
+            }
+            break
+        }
+    }
+    
+    func fetchFoodDataFromDB(sortedPredictedTable: [Dictionary<String, Double>.Element], foodName: String) async -> FoodData? {
+        for item in sortedPredictedTable {
+            print("type")
+            print(type(of: item.key))
+            let dbFoodNameArray = await sqlite.fetchFoodNameByTable(item.key)
+            print(dbFoodNameArray)
+            let result = textProcessing.findSimliarWord(baseString: foodName, otehrStringArray: dbFoodNameArray)
+            let vaildFoodName = result.0
+            if vaildFoodName != "" {
+                print(vaildFoodName, item.key)
+                let foodData = await sqlite.fetchFoodDataByName(tableName: item.key, foodName: vaildFoodName)
+                return foodData
             }
         }
+        return nil
     }
     
     @objc private func startScanning() {
