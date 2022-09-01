@@ -18,4 +18,5 @@ struct FoodData {
     let carbohydrate: Double
     let sugar: Double
     let caffeine: Double
+    var recognizedText: String = ""
 }

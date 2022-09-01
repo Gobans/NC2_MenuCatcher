@@ -13,6 +13,8 @@
 		9103E3F928BDD7620011F3E8 /* FoodCategoryClassfier.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = 9103E3F828BDD7620011F3E8 /* FoodCategoryClassfier.mlpackage */; };
 		911A0B4128BEFB2A007AC11E /* TextProcessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911A0B4028BEFB2A007AC11E /* TextProcessing.swift */; };
 		912AD21128C03AAC009525A5 /* FoodData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912AD21028C03AAC009525A5 /* FoodData.swift */; };
+		912AD21328C0836F009525A5 /* FoodCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912AD21228C0836F009525A5 /* FoodCollectionView.swift */; };
+		912AD21528C08D76009525A5 /* FoodCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912AD21428C08D76009525A5 /* FoodCollectionViewCell.swift */; };
 		915CE6C228B73AFA0009CBD6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */; };
 		915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */; };
 		915CE6C628B73AFA0009CBD6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C528B73AFA0009CBD6 /* ViewController.swift */; };
@@ -27,6 +29,8 @@
 		9103E3F828BDD7620011F3E8 /* FoodCategoryClassfier.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = FoodCategoryClassfier.mlpackage; sourceTree = "<group>"; };
 		911A0B4028BEFB2A007AC11E /* TextProcessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextProcessing.swift; sourceTree = "<group>"; };
 		912AD21028C03AAC009525A5 /* FoodData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodData.swift; sourceTree = "<group>"; };
+		912AD21228C0836F009525A5 /* FoodCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCollectionView.swift; sourceTree = "<group>"; };
+		912AD21428C08D76009525A5 /* FoodCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCollectionViewCell.swift; sourceTree = "<group>"; };
 		915CE6BE28B73AFA0009CBD6 /* Menutrition.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Menutrition.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -74,6 +78,8 @@
 				915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */,
 				915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */,
 				915CE6C528B73AFA0009CBD6 /* ViewController.swift */,
+				912AD21228C0836F009525A5 /* FoodCollectionView.swift */,
+				912AD21428C08D76009525A5 /* FoodCollectionViewCell.swift */,
 				912AD21028C03AAC009525A5 /* FoodData.swift */,
 				915CE6C728B73AFA0009CBD6 /* Main.storyboard */,
 				915CE6CA28B73AFB0009CBD6 /* Assets.xcassets */,
@@ -164,10 +170,12 @@
 			files = (
 				912AD21128C03AAC009525A5 /* FoodData.swift in Sources */,
 				915CE6C628B73AFA0009CBD6 /* ViewController.swift in Sources */,
+				912AD21328C0836F009525A5 /* FoodCollectionView.swift in Sources */,
 				915CE6C228B73AFA0009CBD6 /* AppDelegate.swift in Sources */,
 				9103E3F228BDACCC0011F3E8 /* Sqlite.swift in Sources */,
 				9103E3F928BDD7620011F3E8 /* FoodCategoryClassfier.mlpackage in Sources */,
 				915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */,
+				912AD21528C08D76009525A5 /* FoodCollectionViewCell.swift in Sources */,
 				911A0B4128BEFB2A007AC11E /* TextProcessing.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
