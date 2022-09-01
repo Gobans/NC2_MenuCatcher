@@ -28,8 +28,14 @@ final class ViewController: UIViewController {
     
     let sqlite = Sqlite.shared
     
-    lazy var dataScannerViewController: DataScannerViewController = {
+    lazy var dataMultipleScannerViewController: DataScannerViewController = {
         let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: true, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: true, isHighlightingEnabled: true)
+        viewController.delegate = self
+        return viewController
+    }()
+    
+    lazy var dataSingleScannerViewController: DataScannerViewController = {
+        let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: false, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: true, isHighlightingEnabled: true)
         viewController.delegate = self
         return viewController
     }()
@@ -52,7 +58,7 @@ final class ViewController: UIViewController {
         return button
     }()
     
-    private let catchButton: UIButton = {
+    private let catchMultipleButton: UIButton = {
         let button = UIButton()
         button.configuration = .filled()
         button.setTitle("Catch", for: .normal)
@@ -61,14 +67,29 @@ final class ViewController: UIViewController {
         return button
     }()
     
+    private let catchSinggleButton: UIButton = {
+        let button = UIButton()
+        button.configuration = .filled()
+        button.setTitle("Catch", for: .normal)
+        button.isUserInteractionEnabled = false
+        button.configuration?.background.backgroundColor = .gray
+        return button
+    }()
+    
+    var isMultiple = false
+    
     var currentItems: [RecognizedItem.ID: String] = [:] {
         didSet {
             if currentItems.isEmpty {
-                catchButton.isUserInteractionEnabled = false
-                catchButton.configuration?.background.backgroundColor = .gray
+                catchMultipleButton.isUserInteractionEnabled = false
+                catchMultipleButton.configuration?.background.backgroundColor = .gray
+                catchSinggleButton.isUserInteractionEnabled = false
+                catchSinggleButton.configuration?.background.backgroundColor = .gray
             } else {
-                catchButton.isUserInteractionEnabled = true
-                catchButton.configuration?.background.backgroundColor = .systemBlue
+                catchMultipleButton.isUserInteractionEnabled = true
+                catchMultipleButton.configuration?.background.backgroundColor = .systemBlue
+                catchSinggleButton.isUserInteractionEnabled = true
+                catchSinggleButton.configuration?.background.backgroundColor = .systemBlue
             }
         }
     }
@@ -117,21 +138,31 @@ final class ViewController: UIViewController {
     }
     
     private func configureSubViews() {
-        dataScannerViewController.view.addSubview(catchButton)
+        dataMultipleScannerViewController.view.addSubview(catchMultipleButton)
+        dataSingleScannerViewController.view.addSubview(catchSinggleButton)
     }
     
     private func configureConstratints() {
-        catchButton.translatesAutoresizingMaskIntoConstraints = false
+        catchMultipleButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            catchButton.centerXAnchor.constraint(equalTo: dataScannerViewController.view.centerXAnchor),
-            catchButton.bottomAnchor.constraint(equalTo: dataScannerViewController.view.bottomAnchor, constant: -100),
-            catchButton.widthAnchor.constraint(equalToConstant: 110),
-            catchButton.heightAnchor.constraint(equalToConstant: 60)
+            catchMultipleButton.centerXAnchor.constraint(equalTo: dataMultipleScannerViewController.view.centerXAnchor),
+            catchMultipleButton.bottomAnchor.constraint(equalTo: dataMultipleScannerViewController.view.bottomAnchor, constant: -100),
+            catchMultipleButton.widthAnchor.constraint(equalToConstant: 110),
+            catchMultipleButton.heightAnchor.constraint(equalToConstant: 60)
+        ])
+        
+        catchSinggleButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            catchSinggleButton.centerXAnchor.constraint(equalTo: dataSingleScannerViewController.view.centerXAnchor),
+            catchSinggleButton.bottomAnchor.constraint(equalTo: dataSingleScannerViewController.view.bottomAnchor, constant: -100),
+            catchSinggleButton.widthAnchor.constraint(equalToConstant: 110),
+            catchSinggleButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
     private func configureTargets() {
-        catchButton.addTarget(self, action: #selector(catchText), for: .touchUpInside)
+        catchMultipleButton.addTarget(self, action: #selector(catchText), for: .touchUpInside)
+        catchSinggleButton.addTarget(self, action: #selector(catchText), for: .touchUpInside)
     }
     
     private func endScan(splitedStringArray: [String]) {
@@ -173,15 +204,17 @@ final class ViewController: UIViewController {
     
     @objc private func startMultipleScanning() {
         if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-            present(dataScannerViewController, animated: true)
-            try? self.dataScannerViewController.startScanning()
+            isMultiple = true
+            present(dataMultipleScannerViewController, animated: true)
+            try? self.dataMultipleScannerViewController.startScanning()
         }
     }
     
     @objc private func startSinggleScanning() {
+        isMultiple = false
         if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-            present(dataScannerViewController, animated: true)
-            try? self.dataScannerViewController.startScanning()
+            present(dataSingleScannerViewController, animated: true)
+            try? self.dataSingleScannerViewController.startScanning()
         }
     }
     
@@ -193,10 +226,15 @@ final class ViewController: UIViewController {
                 splitedStringArray.append(tempString)
             }
         }
-//        let splitedStringArray:[String] = item.value.split(separator: "\n").map{String($0)}
         endScan(splitedStringArray: splitedStringArray)
-        dataScannerViewController.dismiss(animated: true)
-        dataScannerViewController.stopScanning()
+        if isMultiple {
+            dataMultipleScannerViewController.dismiss(animated: true)
+            dataMultipleScannerViewController.stopScanning()
+        } else {
+            dataSingleScannerViewController.dismiss(animated: true)
+            dataSingleScannerViewController.stopScanning()
+        }
+        
     }
     
     @objc private func deleteFoodData() {
