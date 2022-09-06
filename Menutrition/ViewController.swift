@@ -176,7 +176,6 @@ final class ViewController: UIViewController {
         for foodName in foodArray {
             let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 3)
             let sortedPredictedTable = predictedTable.sorted{ $0.value > $1.value }
-            print(sortedPredictedTable)
             Task {
                 if var foodData = await fetchFoodDataFromDB(sortedPredictedTable: sortedPredictedTable, foodName: foodName) {
                     foodData.recognizedText = foodName
@@ -195,7 +194,10 @@ final class ViewController: UIViewController {
             let result = textProcessing.findSimliarWord(baseString: foodName, otehrStringArray: dbFoodNameArray)
             let vaildFoodName = result.0
             if vaildFoodName != "" {
+                let start = CFAbsoluteTimeGetCurrent()
                 let foodData = await sqlite.fetchFoodDataByName(tableName: item.key, foodName: vaildFoodName)
+                let processTime = CFAbsoluteTimeGetCurrent() - start
+                print("경과시간 \(processTime)")
                 return foodData
             }
         }
