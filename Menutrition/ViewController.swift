@@ -20,7 +20,7 @@ final class ViewController: UIViewController {
             let categoryPredictor = try NLModel(mlModel: mlModel)
             return categoryPredictor
         } catch {
-            fatalError()
+            fatalError("Faild to initialize NLModel")
         }
     }
     
@@ -58,8 +58,9 @@ final class ViewController: UIViewController {
         return button
     }()
     
-    private let catchMultipleButton: UIButton = {
+    lazy var catchMultipleButton: UIButton = {
         let button = UIButton()
+        button.addTarget(self, action: #selector(catchText), for: .touchUpInside)
         button.configuration = .filled()
         button.setTitle("Catch", for: .normal)
         button.isUserInteractionEnabled = false
@@ -67,8 +68,9 @@ final class ViewController: UIViewController {
         return button
     }()
     
-    private let catchSinggleButton: UIButton = {
+    lazy var catchSinggleButton: UIButton = {
         let button = UIButton()
+        button.addTarget(self, action: #selector(catchText), for: .touchUpInside)
         button.configuration = .filled()
         button.setTitle("Catch", for: .normal)
         button.isUserInteractionEnabled = false
@@ -76,20 +78,33 @@ final class ViewController: UIViewController {
         return button
     }()
     
-    var isMultiple = false
+    enum ScannerMode {
+        case single
+        case multiple
+    }
+    
+    var scannerMode = ScannerMode.single
     
     var currentItems: [RecognizedItem.ID: String] = [:] {
         didSet {
             if currentItems.isEmpty {
-                catchMultipleButton.isUserInteractionEnabled = false
-                catchMultipleButton.configuration?.background.backgroundColor = .gray
-                catchSinggleButton.isUserInteractionEnabled = false
-                catchSinggleButton.configuration?.background.backgroundColor = .gray
+                switch scannerMode {
+                case .single:
+                    catchSinggleButton.isUserInteractionEnabled = false
+                    catchSinggleButton.configuration?.background.backgroundColor = .gray
+                case .multiple:
+                    catchMultipleButton.isUserInteractionEnabled = false
+                    catchMultipleButton.configuration?.background.backgroundColor = .gray
+                }
             } else {
-                catchMultipleButton.isUserInteractionEnabled = true
-                catchMultipleButton.configuration?.background.backgroundColor = .systemBlue
-                catchSinggleButton.isUserInteractionEnabled = true
-                catchSinggleButton.configuration?.background.backgroundColor = .systemBlue
+                switch scannerMode {
+                case .single:
+                    catchSinggleButton.isUserInteractionEnabled = true
+                    catchSinggleButton.configuration?.background.backgroundColor = .systemBlue
+                case .multiple:
+                    catchMultipleButton.isUserInteractionEnabled = true
+                    catchMultipleButton.configuration?.background.backgroundColor = .systemBlue
+                }
             }
         }
     }
@@ -100,7 +115,6 @@ final class ViewController: UIViewController {
         super.viewDidLoad()
         configureUI()
         configureCollectionView()
-        registerCollectionView()
         configureViewDelegate()
     }
     
@@ -111,10 +125,9 @@ final class ViewController: UIViewController {
         navigationItem.title = "Menu Catcher"
         configureSubViews()
         configureConstratints()
-        configureTargets()
     }
     
-    private func configureCollectionView() {
+    func configureCollectionView() {
         let collectionViewLayer = UICollectionViewFlowLayout()
         foodCollectionView = FoodCollectionView(frame: .zero, collectionViewLayout: collectionViewLayer)
         view.addSubview(foodCollectionView)
@@ -126,6 +139,7 @@ final class ViewController: UIViewController {
             foodCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             foodCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         ])
+        registerCollectionView()
     }
     
     func registerCollectionView() {
@@ -158,11 +172,6 @@ final class ViewController: UIViewController {
             catchSinggleButton.widthAnchor.constraint(equalToConstant: 110),
             catchSinggleButton.heightAnchor.constraint(equalToConstant: 60)
         ])
-    }
-    
-    private func configureTargets() {
-        catchMultipleButton.addTarget(self, action: #selector(catchText), for: .touchUpInside)
-        catchSinggleButton.addTarget(self, action: #selector(catchText), for: .touchUpInside)
     }
     
     private func endScan(splitedStringArray: [String]) {
@@ -204,19 +213,19 @@ final class ViewController: UIViewController {
         return nil
     }
     
-    @objc private func startMultipleScanning() {
+    @objc private func startSinggleScanning() {
         if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-            isMultiple = true
-            present(dataMultipleScannerViewController, animated: true)
-            try? self.dataMultipleScannerViewController.startScanning()
+            scannerMode = .single
+            present(dataSingleScannerViewController, animated: true)
+            try? self.dataSingleScannerViewController.startScanning()
         }
     }
     
-    @objc private func startSinggleScanning() {
-        isMultiple = false
+    @objc private func startMultipleScanning() {
         if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-            present(dataSingleScannerViewController, animated: true)
-            try? self.dataSingleScannerViewController.startScanning()
+            scannerMode = .multiple
+            present(dataMultipleScannerViewController, animated: true)
+            try? self.dataMultipleScannerViewController.startScanning()
         }
     }
     
@@ -229,14 +238,14 @@ final class ViewController: UIViewController {
             }
         }
         endScan(splitedStringArray: splitedStringArray)
-        if isMultiple {
-            dataMultipleScannerViewController.dismiss(animated: true)
-            dataMultipleScannerViewController.stopScanning()
-        } else {
+        switch scannerMode {
+        case .single:
             dataSingleScannerViewController.dismiss(animated: true)
             dataSingleScannerViewController.stopScanning()
+        case .multiple:
+            dataMultipleScannerViewController.dismiss(animated: true)
+            dataMultipleScannerViewController.stopScanning()
         }
-        
     }
     
     @objc private func deleteFoodData() {
