@@ -110,12 +110,18 @@ final class ViewController: UIViewController {
     }
     
     var foodDataArray: [FoodData] = []
+    
+    var allFoodNameDictionary: [String: [String]] = [:]
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
         configureCollectionView()
         configureViewDelegate()
+        Task {
+            allFoodNameDictionary = await sqlite.fetchAllFoodName()
+            print(allFoodNameDictionary)
+        }
     }
     
     private func configureUI() {
@@ -184,22 +190,22 @@ final class ViewController: UIViewController {
         }
         for foodName in foodArray {
             let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 3)
-            let sortedPredictedTable = predictedTable.sorted{ $0.value > $1.value }
-            Task {
-                if var foodData = await fetchFoodDataFromDB(sortedPredictedTable: sortedPredictedTable, foodName: foodName) {
-                    foodData.recognizedText = foodName
-                    foodDataArray.append(foodData)
-                    DispatchQueue.main.async {
-                        self.foodCollectionView.reloadData()
-                    }
-                }
-            }
+//            let sortedPredictedTable = predictedTable.sorted{ $0.value > $1.value }
+//            Task {
+//                if var foodData = await fetchFoodDataFromDB(sortedPredictedTable: sortedPredictedTable, foodName: foodName) {
+//                    foodData.recognizedText = foodName
+//                    foodDataArray.append(foodData)
+//                    DispatchQueue.main.async {
+//                        self.foodCollectionView.reloadData()
+//                    }
+//                }
+//            }
         }
     }
     
     func fetchFoodDataFromDB(sortedPredictedTable: [Dictionary<String, Double>.Element], foodName: String) async -> FoodData? {
         for item in sortedPredictedTable {
-            let dbFoodNameArray = await sqlite.fetchFoodNameByTable(item.key)
+            let dbFoodNameArray:[String] = []
             let result = textProcessing.findSimliarWord(baseString: foodName, otehrStringArray: dbFoodNameArray)
             let vaildFoodName = result.0
             if vaildFoodName != "" {
