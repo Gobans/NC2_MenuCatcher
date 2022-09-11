@@ -112,7 +112,7 @@ final class ViewController: UIViewController {
     var foodDataArray: [FoodData] = []
     
     var allFoodNameDictionary: [String: [String]] = [:]
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
@@ -181,6 +181,7 @@ final class ViewController: UIViewController {
     }
     
     private func endScan(splitedStringArray: [String]) {
+        let start = CFAbsoluteTimeGetCurrent()
         var foodArray: [String] = []
         for phase in splitedStringArray {
             if textProcessing.isValidWord(phase) {
@@ -189,34 +190,42 @@ final class ViewController: UIViewController {
             }
         }
         for foodName in foodArray {
-            let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 3)
-//            let sortedPredictedTable = predictedTable.sorted{ $0.value > $1.value }
-//            Task {
-//                if var foodData = await fetchFoodDataFromDB(sortedPredictedTable: sortedPredictedTable, foodName: foodName) {
-//                    foodData.recognizedText = foodName
-//                    foodDataArray.append(foodData)
-//                    DispatchQueue.main.async {
-//                        self.foodCollectionView.reloadData()
-//                    }
-//                }
-//            }
-        }
-    }
-    
-    func fetchFoodDataFromDB(sortedPredictedTable: [Dictionary<String, Double>.Element], foodName: String) async -> FoodData? {
-        for item in sortedPredictedTable {
-            let dbFoodNameArray:[String] = []
-            let result = textProcessing.findSimliarWord(baseString: foodName, otehrStringArray: dbFoodNameArray)
-            let vaildFoodName = result.0
-            if vaildFoodName != "" {
-                let start = CFAbsoluteTimeGetCurrent()
-                let foodData = await sqlite.fetchFoodDataByName(tableName: item.key, foodName: vaildFoodName)
-                let processTime = CFAbsoluteTimeGetCurrent() - start
-                print("경과시간 \(processTime)")
-                return foodData
+            let rmSpacingFoodName = foodName.replacingOccurrences(of: " ", with: "")
+            let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 8)
+            let sortedPredictedTable = predictedTable.sorted{ $0.value > $1.value }.map{ $0.key }
+            var vaildfoodNameDictionary: [String: [String]] = [:]
+            let _ =  sortedPredictedTable.map {
+                vaildfoodNameDictionary[$0] = []
+            }
+            print(sortedPredictedTable)
+            for table in sortedPredictedTable {
+                guard let vaildFoodNameArray = allFoodNameDictionary[table] else {
+                    print("Invaild Food Table")
+                    return
+                }
+                let vaildConsonantFood = textProcessing.checkVaildConsonantFood(verifyString: rmSpacingFoodName, dbFoodNameArray: vaildFoodNameArray)
+                let _ = vaildConsonantFood.map {
+                    vaildfoodNameDictionary[table]?.append($0)
+                }
+            }
+            print(vaildfoodNameDictionary)
+            let result = textProcessing.findSimliarWord(baseString: rmSpacingFoodName, vaildfoodNameDictionary: vaildfoodNameDictionary)
+            let simliarFoodName = result.0.0
+            let simliarFoodTable = result.0.1
+            let simliarFoodArray = result.1
+            Task {
+                if var foodData = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
+                    foodData.recognizedText = foodName
+                    print(foodData)
+                    foodDataArray.append(foodData)
+                    DispatchQueue.main.async {
+                        self.foodCollectionView.reloadData()
+                        let processTime = CFAbsoluteTimeGetCurrent() - start
+                        print("경과시간 \(processTime)")
+                    }
+                }
             }
         }
-        return nil
     }
     
     @objc private func startSinggleScanning() {
@@ -243,7 +252,9 @@ final class ViewController: UIViewController {
                 splitedStringArray.append(tempString)
             }
         }
-        endScan(splitedStringArray: splitedStringArray)
+        Task {
+            endScan(splitedStringArray: splitedStringArray)
+        }
         switch scannerMode {
         case .single:
             dataSingleScannerViewController.dismiss(animated: true)
