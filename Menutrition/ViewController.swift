@@ -20,7 +20,7 @@ final class ViewController: UIViewController {
             let categoryPredictor = try NLModel(mlModel: mlModel)
             return categoryPredictor
         } catch {
-            fatalError()
+            fatalError("Faild to initialize NLModel")
         }
     }
     
@@ -58,8 +58,9 @@ final class ViewController: UIViewController {
         return button
     }()
     
-    private let catchMultipleButton: UIButton = {
+    lazy var catchMultipleButton: UIButton = {
         let button = UIButton()
+        button.addTarget(self, action: #selector(catchText), for: .touchUpInside)
         button.configuration = .filled()
         button.setTitle("Catch", for: .normal)
         button.isUserInteractionEnabled = false
@@ -67,8 +68,9 @@ final class ViewController: UIViewController {
         return button
     }()
     
-    private let catchSinggleButton: UIButton = {
+    lazy var catchSinggleButton: UIButton = {
         let button = UIButton()
+        button.addTarget(self, action: #selector(catchText), for: .touchUpInside)
         button.configuration = .filled()
         button.setTitle("Catch", for: .normal)
         button.isUserInteractionEnabled = false
@@ -76,32 +78,50 @@ final class ViewController: UIViewController {
         return button
     }()
     
-    var isMultiple = false
+    enum ScannerMode {
+        case single
+        case multiple
+    }
+    
+    var scannerMode = ScannerMode.single
     
     var currentItems: [RecognizedItem.ID: String] = [:] {
         didSet {
             if currentItems.isEmpty {
-                catchMultipleButton.isUserInteractionEnabled = false
-                catchMultipleButton.configuration?.background.backgroundColor = .gray
-                catchSinggleButton.isUserInteractionEnabled = false
-                catchSinggleButton.configuration?.background.backgroundColor = .gray
+                switch scannerMode {
+                case .single:
+                    catchSinggleButton.isUserInteractionEnabled = false
+                    catchSinggleButton.configuration?.background.backgroundColor = .gray
+                case .multiple:
+                    catchMultipleButton.isUserInteractionEnabled = false
+                    catchMultipleButton.configuration?.background.backgroundColor = .gray
+                }
             } else {
-                catchMultipleButton.isUserInteractionEnabled = true
-                catchMultipleButton.configuration?.background.backgroundColor = .systemBlue
-                catchSinggleButton.isUserInteractionEnabled = true
-                catchSinggleButton.configuration?.background.backgroundColor = .systemBlue
+                switch scannerMode {
+                case .single:
+                    catchSinggleButton.isUserInteractionEnabled = true
+                    catchSinggleButton.configuration?.background.backgroundColor = .systemBlue
+                case .multiple:
+                    catchMultipleButton.isUserInteractionEnabled = true
+                    catchMultipleButton.configuration?.background.backgroundColor = .systemBlue
+                }
             }
         }
     }
     
     var foodDataArray: [FoodData] = []
-
+    
+    var allFoodNameDictionary: [String: [String]] = [:]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
         configureCollectionView()
-        registerCollectionView()
         configureViewDelegate()
+        Task {
+            allFoodNameDictionary = await sqlite.fetchAllFoodName()
+            print(allFoodNameDictionary)
+        }
     }
     
     private func configureUI() {
@@ -111,10 +131,9 @@ final class ViewController: UIViewController {
         navigationItem.title = "Menu Catcher"
         configureSubViews()
         configureConstratints()
-        configureTargets()
     }
     
-    private func configureCollectionView() {
+    func configureCollectionView() {
         let collectionViewLayer = UICollectionViewFlowLayout()
         foodCollectionView = FoodCollectionView(frame: .zero, collectionViewLayout: collectionViewLayer)
         view.addSubview(foodCollectionView)
@@ -126,6 +145,7 @@ final class ViewController: UIViewController {
             foodCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             foodCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         ])
+        registerCollectionView()
     }
     
     func registerCollectionView() {
@@ -160,12 +180,8 @@ final class ViewController: UIViewController {
         ])
     }
     
-    private func configureTargets() {
-        catchMultipleButton.addTarget(self, action: #selector(catchText), for: .touchUpInside)
-        catchSinggleButton.addTarget(self, action: #selector(catchText), for: .touchUpInside)
-    }
-    
     private func endScan(splitedStringArray: [String]) {
+        let start = CFAbsoluteTimeGetCurrent()
         var foodArray: [String] = []
         for phase in splitedStringArray {
             if textProcessing.isValidWord(phase) {
@@ -174,49 +190,57 @@ final class ViewController: UIViewController {
             }
         }
         for foodName in foodArray {
-            let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 3)
-            let sortedPredictedTable = predictedTable.sorted{ $0.value > $1.value }
+            let rmSpacingFoodName = foodName.replacingOccurrences(of: " ", with: "")
+            let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 8)
+            let sortedPredictedTable = predictedTable.sorted{ $0.value > $1.value }.map{ $0.key }
+            var vaildfoodNameDictionary: [String: [String]] = [:]
+            let _ =  sortedPredictedTable.map {
+                vaildfoodNameDictionary[$0] = []
+            }
+            print(sortedPredictedTable)
+            for table in sortedPredictedTable {
+                guard let vaildFoodNameArray = allFoodNameDictionary[table] else {
+                    print("Invaild Food Table")
+                    return
+                }
+                let vaildConsonantFood = textProcessing.checkVaildConsonantFood(verifyString: rmSpacingFoodName, dbFoodNameArray: vaildFoodNameArray)
+                let _ = vaildConsonantFood.map {
+                    vaildfoodNameDictionary[table]?.append($0)
+                }
+            }
+            print(vaildfoodNameDictionary)
+            let result = textProcessing.findSimliarWord(baseString: rmSpacingFoodName, vaildfoodNameDictionary: vaildfoodNameDictionary)
+            let simliarFoodName = result.0.0
+            let simliarFoodTable = result.0.1
+            let simliarFoodArray = result.1
             Task {
-                if var foodData = await fetchFoodDataFromDB(sortedPredictedTable: sortedPredictedTable, foodName: foodName) {
+                if var foodData = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
                     foodData.recognizedText = foodName
+                    print(foodData)
                     foodDataArray.append(foodData)
                     DispatchQueue.main.async {
                         self.foodCollectionView.reloadData()
+                        let processTime = CFAbsoluteTimeGetCurrent() - start
+                        print("경과시간 \(processTime)")
                     }
                 }
             }
         }
     }
     
-    func fetchFoodDataFromDB(sortedPredictedTable: [Dictionary<String, Double>.Element], foodName: String) async -> FoodData? {
-        for item in sortedPredictedTable {
-            let dbFoodNameArray = await sqlite.fetchFoodNameByTable(item.key)
-            let result = textProcessing.findSimliarWord(baseString: foodName, otehrStringArray: dbFoodNameArray)
-            let vaildFoodName = result.0
-            if vaildFoodName != "" {
-                let start = CFAbsoluteTimeGetCurrent()
-                let foodData = await sqlite.fetchFoodDataByName(tableName: item.key, foodName: vaildFoodName)
-                let processTime = CFAbsoluteTimeGetCurrent() - start
-                print("경과시간 \(processTime)")
-                return foodData
-            }
+    @objc private func startSinggleScanning() {
+        if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
+            scannerMode = .single
+            present(dataSingleScannerViewController, animated: true)
+            try? self.dataSingleScannerViewController.startScanning()
         }
-        return nil
     }
     
     @objc private func startMultipleScanning() {
         if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-            isMultiple = true
+            scannerMode = .multiple
             present(dataMultipleScannerViewController, animated: true)
             try? self.dataMultipleScannerViewController.startScanning()
-        }
-    }
-    
-    @objc private func startSinggleScanning() {
-        isMultiple = false
-        if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-            present(dataSingleScannerViewController, animated: true)
-            try? self.dataSingleScannerViewController.startScanning()
         }
     }
     
@@ -228,15 +252,17 @@ final class ViewController: UIViewController {
                 splitedStringArray.append(tempString)
             }
         }
-        endScan(splitedStringArray: splitedStringArray)
-        if isMultiple {
-            dataMultipleScannerViewController.dismiss(animated: true)
-            dataMultipleScannerViewController.stopScanning()
-        } else {
+        Task {
+            endScan(splitedStringArray: splitedStringArray)
+        }
+        switch scannerMode {
+        case .single:
             dataSingleScannerViewController.dismiss(animated: true)
             dataSingleScannerViewController.stopScanning()
+        case .multiple:
+            dataMultipleScannerViewController.dismiss(animated: true)
+            dataMultipleScannerViewController.stopScanning()
         }
-        
     }
     
     @objc private func deleteFoodData() {
@@ -289,7 +315,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
         let foodInfo = foodDataArray[indexPath.row]
         cell.foodNameLabel.text = foodInfo.name
         cell.recognizedTextLabel.text = "인식된 text: \(foodInfo.recognizedText)"
-        let tempString = "1회 제공량: \(String(foodInfo.serving))\(foodInfo.unit)\n열량: \(String(foodInfo.energy)) kcal\n단백질: \(foodInfo.protein)g\n지방: \(foodInfo.fat)g\n탄수화물: \(foodInfo.carbohydrate)g\n당류: \(foodInfo.sugar)g\n카페인: \(foodInfo.caffeine)mg"
+        let tempString = "1회 제공량: \(String(foodInfo.serving))\(foodInfo.unit)\n열량: \(String(foodInfo.energy)) kcal\n단백질: \(foodInfo.protein)g\n지방: \(foodInfo.fat)g\n탄수화물: \(foodInfo.carbohydrate)g\n당류: \(foodInfo.sugar)g\n나트륨: \(foodInfo.natrium)mg\n콜레스테롤: \(foodInfo.cholesterol)mg\n포화지방: \(foodInfo.saturatedFat)mg\n트랜스지방: \(foodInfo.transFat)mg\n카페인: \(foodInfo.caffeine)mg"
         cell.nutritionLabel.text = tempString
         return cell
     }

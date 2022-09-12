@@ -14,13 +14,13 @@
 		912AD21128C03AAC009525A5 /* FoodData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912AD21028C03AAC009525A5 /* FoodData.swift */; };
 		912AD21328C0836F009525A5 /* FoodCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912AD21228C0836F009525A5 /* FoodCollectionView.swift */; };
 		912AD21528C08D76009525A5 /* FoodCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912AD21428C08D76009525A5 /* FoodCollectionViewCell.swift */; };
-		912AD21728C0C9C9009525A5 /* FoodCategoryClassfier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 912AD21628C0C9C9009525A5 /* FoodCategoryClassfier.mlmodel */; };
 		915CE6C228B73AFA0009CBD6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */; };
 		915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */; };
 		915CE6C628B73AFA0009CBD6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C528B73AFA0009CBD6 /* ViewController.swift */; };
 		915CE6C928B73AFA0009CBD6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 915CE6C728B73AFA0009CBD6 /* Main.storyboard */; };
 		915CE6CB28B73AFB0009CBD6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 915CE6CA28B73AFB0009CBD6 /* Assets.xcassets */; };
 		915CE6CE28B73AFB0009CBD6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 915CE6CC28B73AFB0009CBD6 /* LaunchScreen.storyboard */; };
+		91A5A4EF28C88DB80046425A /* FoodCategoryClassfier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 91A5A4EE28C88DB80046425A /* FoodCategoryClassfier.mlmodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,7 +30,6 @@
 		912AD21028C03AAC009525A5 /* FoodData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodData.swift; sourceTree = "<group>"; };
 		912AD21228C0836F009525A5 /* FoodCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCollectionView.swift; sourceTree = "<group>"; };
 		912AD21428C08D76009525A5 /* FoodCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCollectionViewCell.swift; sourceTree = "<group>"; };
-		912AD21628C0C9C9009525A5 /* FoodCategoryClassfier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = FoodCategoryClassfier.mlmodel; sourceTree = "<group>"; };
 		915CE6BE28B73AFA0009CBD6 /* Menutrition.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Menutrition.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -39,6 +38,7 @@
 		915CE6CA28B73AFB0009CBD6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		915CE6CD28B73AFB0009CBD6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		915CE6CF28B73AFB0009CBD6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		91A5A4EE28C88DB80046425A /* FoodCategoryClassfier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = FoodCategoryClassfier.mlmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,7 +72,7 @@
 		915CE6C028B73AFA0009CBD6 /* Menutrition */ = {
 			isa = PBXGroup;
 			children = (
-				912AD21628C0C9C9009525A5 /* FoodCategoryClassfier.mlmodel */,
+				91A5A4EE28C88DB80046425A /* FoodCategoryClassfier.mlmodel */,
 				9103E3F128BDACCC0011F3E8 /* Sqlite.swift */,
 				911A0B4028BEFB2A007AC11E /* TextProcessing.swift */,
 				915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */,
@@ -176,7 +176,7 @@
 				915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */,
 				912AD21528C08D76009525A5 /* FoodCollectionViewCell.swift in Sources */,
 				911A0B4128BEFB2A007AC11E /* TextProcessing.swift in Sources */,
-				912AD21728C0C9C9009525A5 /* FoodCategoryClassfier.mlmodel in Sources */,
+				91A5A4EF28C88DB80046425A /* FoodCategoryClassfier.mlmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
