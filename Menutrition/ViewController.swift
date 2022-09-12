@@ -315,7 +315,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
         let foodInfo = foodDataArray[indexPath.row]
         cell.foodNameLabel.text = foodInfo.name
         cell.recognizedTextLabel.text = "인식된 text: \(foodInfo.recognizedText)"
-        let tempString = "1회 제공량: \(String(foodInfo.serving))\(foodInfo.unit)\n열량: \(String(foodInfo.energy)) kcal\n단백질: \(foodInfo.protein)g\n지방: \(foodInfo.fat)g\n탄수화물: \(foodInfo.carbohydrate)g\n당류: \(foodInfo.sugar)g\n카페인: \(foodInfo.caffeine)mg"
+        let tempString = "1회 제공량: \(String(foodInfo.serving))\(foodInfo.unit)\n열량: \(String(foodInfo.energy)) kcal\n단백질: \(foodInfo.protein)g\n지방: \(foodInfo.fat)g\n탄수화물: \(foodInfo.carbohydrate)g\n당류: \(foodInfo.sugar)g\n나트륨: \(foodInfo.natrium)mg\n콜레스테롤: \(foodInfo.cholesterol)mg\n포화지방: \(foodInfo.saturatedFat)mg\n트랜스지방: \(foodInfo.transFat)mg\n카페인: \(foodInfo.caffeine)mg"
         cell.nutritionLabel.text = tempString
         return cell
     }

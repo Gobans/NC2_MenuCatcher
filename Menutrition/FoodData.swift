@@ -12,11 +12,14 @@ struct FoodData {
     let serving: Int64
     let unit: String
     let energy: Double
-    let water: Double
     let protein: Double
     let fat: Double
     let carbohydrate: Double
     let sugar: Double
+    let natrium: Double
+    let cholesterol: Double
+    let saturatedFat: Double
+    let transFat: Double
     let caffeine: Double
     var recognizedText: String = ""
 }

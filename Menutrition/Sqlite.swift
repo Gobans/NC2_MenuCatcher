@@ -36,11 +36,14 @@ final class Sqlite {
     let servingExpression = Expression<Int64>("1회제공량")
     let unitExpression = Expression<String>("단위")
     let energyExpression = Expression<Double>("에너지")
-    let waterExpression = Expression<Double>("수분")
     let proteinExpression = Expression<Double>("단백질")
     let fatExpression = Expression<Double>("지방")
     let carbohydrateExpression = Expression<Double>("탄수화물")
     let sugarExpression = Expression<Double>("총당류")
+    let natriumExpression = Expression<Double>("나트륨")
+    let cholesterolExpression = Expression<Double>("콜레스테롤")
+    let saturatedFatExpression = Expression<Double>("포화지방")
+    let transFatExpression = Expression<Double>("트랜스지방")
     let caffeineExpression = Expression<Double>("카페인")
 
     func fetchAllFoodName() async -> [String: [String]] {
@@ -68,7 +71,21 @@ final class Sqlite {
         do {
             guard let foodInfo = try db.pluck(query) else { print("fetchFoodDatByName retrun")
                 return nil }
-            foodData = FoodData(name: foodInfo[nameExpression], serving: foodInfo[servingExpression], unit: foodInfo[unitExpression], energy: foodInfo[energyExpression], water: foodInfo[waterExpression], protein: foodInfo[proteinExpression], fat: foodInfo[fatExpression], carbohydrate: foodInfo[carbohydrateExpression], sugar: foodInfo[sugarExpression], caffeine: foodInfo[caffeineExpression])
+            foodData = FoodData(
+                name: foodInfo[nameExpression],
+                serving: foodInfo[servingExpression],
+                unit: foodInfo[unitExpression],
+                energy: foodInfo[energyExpression],
+                protein: foodInfo[proteinExpression],
+                fat: foodInfo[fatExpression],
+                carbohydrate: foodInfo[carbohydrateExpression],
+                sugar: foodInfo[sugarExpression],
+                natrium: foodInfo[natriumExpression],
+                cholesterol: foodInfo[cholesterolExpression],
+                saturatedFat: foodInfo[saturatedFatExpression],
+                transFat: foodInfo[transFatExpression],
+                caffeine: foodInfo[caffeineExpression]
+            )
         }catch {
             print(error)
         }
