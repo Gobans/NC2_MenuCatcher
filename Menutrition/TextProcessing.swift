@@ -41,9 +41,6 @@ final class TextProcessing {
                 tempCandidateArray[vaildFoodName] = (item.key, jamoResultCost)
             }
         }
-        print("------------------------")
-        print("baseString: \(baseString)")
-        print(tempCandidateArray)
         var sortedTempCandidateArray = tempCandidateArray.sorted(by: {$0.value.1 > $1.value.1}).map{($0.key, $0.value.0)}
         if result.0 == "" && !sortedTempCandidateArray.isEmpty{
             result = sortedTempCandidateArray.popLast()!

@@ -79,7 +79,6 @@ final class ViewController: UIViewController {
         configureViewDelegate()
         Task {
             allFoodNameDictionary = await sqlite.fetchAllFoodName()
-            print(allFoodNameDictionary)
         }
     }
     
@@ -130,12 +129,11 @@ final class ViewController: UIViewController {
         ])
     }
     
-    private func endScan(splitedStringArray: [String]) {
+    private func endScan(splitedStringArray: [String]) async {
         let start = CFAbsoluteTimeGetCurrent()
         var foodArray: [String] = []
         for phase in splitedStringArray {
             if textProcessing.isValidWord(phase) {
-                print(phase)
                 foodArray.append(phase)
             }
         }
@@ -147,10 +145,8 @@ final class ViewController: UIViewController {
             let _ =  sortedPredictedTable.map {
                 vaildfoodNameDictionary[$0] = []
             }
-            print(sortedPredictedTable)
             for table in sortedPredictedTable {
                 guard let vaildFoodNameArray = allFoodNameDictionary[table] else {
-                    print("Invaild Food Table")
                     return
                 }
                 let vaildConsonantFood = textProcessing.checkVaildConsonantFood(verifyString: rmSpacingFoodName, dbFoodNameArray: vaildFoodNameArray)
@@ -158,24 +154,22 @@ final class ViewController: UIViewController {
                     vaildfoodNameDictionary[table]?.append($0)
                 }
             }
-            print(vaildfoodNameDictionary)
             let result = textProcessing.findSimliarWord(baseString: rmSpacingFoodName, vaildfoodNameDictionary: vaildfoodNameDictionary)
             let simliarFoodName = result.0.0
             let simliarFoodTable = result.0.1
             let simliarFoodArray = result.1
-            Task {
-                if var foodData = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
-                    foodData.recognizedText = foodName
-                    print(foodData)
-                    foodDataArray.append(foodData)
-                    DispatchQueue.main.async {
-                        self.foodCollectionView.reloadData()
-                        let processTime = CFAbsoluteTimeGetCurrent() - start
-                        print("경과시간 \(processTime)")
-                    }
+            if var foodData = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
+                foodData.recognizedText = foodName
+                foodDataArray.append(foodData)
+                foodDataArray.insert(foodData, at: foodDataArray.startIndex)
+                DispatchQueue.main.async {
+                    self.foodCollectionView.reloadData()
+                    let processTime = CFAbsoluteTimeGetCurrent() - start
+                    print("경과시간 \(processTime)")
                 }
             }
         }
+        
     }
     
     @objc private func startSinggleScanning() {
@@ -194,7 +188,7 @@ final class ViewController: UIViewController {
             }
         }
         Task {
-            endScan(splitedStringArray: splitedStringArray)
+            await endScan(splitedStringArray: splitedStringArray)
         }
         dataSingleScannerViewController.dismiss(animated: true)
         dataSingleScannerViewController.stopScanning()
