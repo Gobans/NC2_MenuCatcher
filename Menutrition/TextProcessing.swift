@@ -30,44 +30,6 @@ final class TextProcessing {
         case consonant
     }
     
-//    func findSimliarWord(baseString: String, otehrStringArray: [String]) -> (String, [String]){
-//        var resultString: String = ""
-//        var candidateArray: [String] = []
-//        var precedingCandidateArray: [(String, Float)] = []
-//        var trailingCandidateArray: [String] = []
-//        for otherString in otehrStringArray {
-//            let consonantResultCost: Float = levenshtein(base: baseString, other: otherString, mode: .consonant)
-//            if consonantResultCost <= 1 {
-//                let jamoResultCost: Float = levenshtein(base: baseString, other: otherString, mode: .jamo)
-//                if jamoResultCost < 1 {
-//                    resultString = otherString
-//                    break
-//                } else {
-//                    precedingCandidateArray.append((otherString, jamoResultCost))
-//                }
-//            } else if consonantResultCost <= 3 {
-//                trailingCandidateArray.append(otherString)
-//            }
-//        }
-//        while (!trailingCandidateArray.isEmpty && precedingCandidateArray.count < 5) {
-//            if let trailingCandidateString = trailingCandidateArray.popLast() {
-//                let jamoResultCost: Float = levenshtein(base: baseString, other: trailingCandidateString, mode: .jamo)
-//                precedingCandidateArray.append((trailingCandidateString, jamoResultCost))
-//            }
-//        }
-//        if !precedingCandidateArray.isEmpty {
-//            precedingCandidateArray.sort(by: {$0.1 > $1.1})
-//            while (!precedingCandidateArray.isEmpty && candidateArray.count < 5) {
-//                if let similarItem = precedingCandidateArray.popLast() {
-//                    candidateArray.append(similarItem.0)
-//                }
-//            }
-//        }
-//        if resultString == "" && !candidateArray.isEmpty {
-//            resultString = candidateArray.removeFirst()
-//        }
-//        return (resultString, candidateArray)
-//    }
     func findSimliarWord(baseString: String, vaildfoodNameDictionary: [String: [String]]) -> ((String,String), [(String,String)]){
         var result: (String, String) = ("","")
         var candidateArray: [(String, String)] = []

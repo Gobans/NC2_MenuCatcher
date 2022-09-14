@@ -28,26 +28,14 @@ final class ViewController: UIViewController {
     
     let sqlite = Sqlite.shared
     
-    lazy var dataMultipleScannerViewController: DataScannerViewController = {
-        let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: true, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: true, isHighlightingEnabled: true)
-        viewController.delegate = self
-        return viewController
-    }()
-    
     lazy var dataSingleScannerViewController: DataScannerViewController = {
         let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: false, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: true, isHighlightingEnabled: true)
         viewController.delegate = self
         return viewController
     }()
     
-    lazy var multiScanButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "text.viewfinder") , style: .plain, target: self, action: #selector(startMultipleScanning))
-        button.tintColor = .systemBlue
-        return button
-    }()
-    
     lazy var singleScanButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "viewfinder") , style: .plain, target: self, action: #selector(startSinggleScanning))
+        let button = UIBarButtonItem(image: UIImage(systemName: "text.viewfinder") , style: .plain, target: self, action: #selector(startSinggleScanning))
         button.tintColor = .systemBlue
         return button
     }()
@@ -55,16 +43,6 @@ final class ViewController: UIViewController {
     lazy var deleteButton: UIBarButtonItem = {
         let button = UIBarButtonItem(image: UIImage(systemName: "trash") , style: .plain, target: self, action: #selector(deleteFoodData))
         button.tintColor = .systemBlue
-        return button
-    }()
-    
-    lazy var catchMultipleButton: UIButton = {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(catchText), for: .touchUpInside)
-        button.configuration = .filled()
-        button.setTitle("Catch", for: .normal)
-        button.isUserInteractionEnabled = false
-        button.configuration?.background.backgroundColor = .gray
         return button
     }()
     
@@ -78,33 +56,14 @@ final class ViewController: UIViewController {
         return button
     }()
     
-    enum ScannerMode {
-        case single
-        case multiple
-    }
-    
-    var scannerMode = ScannerMode.single
-    
     var currentItems: [RecognizedItem.ID: String] = [:] {
         didSet {
             if currentItems.isEmpty {
-                switch scannerMode {
-                case .single:
-                    catchSinggleButton.isUserInteractionEnabled = false
-                    catchSinggleButton.configuration?.background.backgroundColor = .gray
-                case .multiple:
-                    catchMultipleButton.isUserInteractionEnabled = false
-                    catchMultipleButton.configuration?.background.backgroundColor = .gray
-                }
+                catchSinggleButton.isUserInteractionEnabled = false
+                catchSinggleButton.configuration?.background.backgroundColor = .gray
             } else {
-                switch scannerMode {
-                case .single:
-                    catchSinggleButton.isUserInteractionEnabled = true
-                    catchSinggleButton.configuration?.background.backgroundColor = .systemBlue
-                case .multiple:
-                    catchMultipleButton.isUserInteractionEnabled = true
-                    catchMultipleButton.configuration?.background.backgroundColor = .systemBlue
-                }
+                catchSinggleButton.isUserInteractionEnabled = true
+                catchSinggleButton.configuration?.background.backgroundColor = .systemBlue
             }
         }
     }
@@ -126,7 +85,7 @@ final class ViewController: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = .white
-        navigationItem.rightBarButtonItems = [singleScanButton, multiScanButton]
+        navigationItem.rightBarButtonItem = singleScanButton
         navigationItem.leftBarButtonItem = deleteButton
         navigationItem.title = "Menu Catcher"
         configureSubViews()
@@ -158,19 +117,10 @@ final class ViewController: UIViewController {
     }
     
     private func configureSubViews() {
-        dataMultipleScannerViewController.view.addSubview(catchMultipleButton)
         dataSingleScannerViewController.view.addSubview(catchSinggleButton)
     }
     
     private func configureConstratints() {
-        catchMultipleButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            catchMultipleButton.centerXAnchor.constraint(equalTo: dataMultipleScannerViewController.view.centerXAnchor),
-            catchMultipleButton.bottomAnchor.constraint(equalTo: dataMultipleScannerViewController.view.bottomAnchor, constant: -100),
-            catchMultipleButton.widthAnchor.constraint(equalToConstant: 110),
-            catchMultipleButton.heightAnchor.constraint(equalToConstant: 60)
-        ])
-        
         catchSinggleButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             catchSinggleButton.centerXAnchor.constraint(equalTo: dataSingleScannerViewController.view.centerXAnchor),
@@ -230,17 +180,8 @@ final class ViewController: UIViewController {
     
     @objc private func startSinggleScanning() {
         if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-            scannerMode = .single
             present(dataSingleScannerViewController, animated: true)
             try? self.dataSingleScannerViewController.startScanning()
-        }
-    }
-    
-    @objc private func startMultipleScanning() {
-        if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-            scannerMode = .multiple
-            present(dataMultipleScannerViewController, animated: true)
-            try? self.dataMultipleScannerViewController.startScanning()
         }
     }
     
@@ -255,14 +196,8 @@ final class ViewController: UIViewController {
         Task {
             endScan(splitedStringArray: splitedStringArray)
         }
-        switch scannerMode {
-        case .single:
-            dataSingleScannerViewController.dismiss(animated: true)
-            dataSingleScannerViewController.stopScanning()
-        case .multiple:
-            dataMultipleScannerViewController.dismiss(animated: true)
-            dataMultipleScannerViewController.stopScanning()
-        }
+        dataSingleScannerViewController.dismiss(animated: true)
+        dataSingleScannerViewController.stopScanning()
     }
     
     @objc private func deleteFoodData() {
