@@ -64,14 +64,14 @@ final class Sqlite {
         return foodNameDictionary
     }
     
-    func fetchFoodDataByName(tableName: String, foodName: String) async -> FoodData? {
+    func fetchFoodDataByName(tableName: String, foodName: String) async -> Food? {
         guard let myTable = dbTable[tableName] else { return nil }
         let query = myTable.filter(foodName == nameExpression)
-        var foodData: FoodData? = nil
+        var foodData: Food? = nil
         do {
             guard let foodInfo = try db.pluck(query) else { print("fetchFoodDatByName retrun")
                 return nil }
-            foodData = FoodData(
+            foodData = Food(
                 name: foodInfo[nameExpression],
                 serving: foodInfo[servingExpression],
                 unit: foodInfo[unitExpression],

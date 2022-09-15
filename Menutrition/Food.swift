@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct FoodData {
+struct Food {
+    let id = UUID()
     let name: String
     let serving: Int64
     let unit: String
@@ -22,4 +23,14 @@ struct FoodData {
     let transFat: Double
     let caffeine: Double
     var recognizedText: String = ""
+}
+
+extension Food: Hashable {
+    static func == (lhs: Food, rhs: Food) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }

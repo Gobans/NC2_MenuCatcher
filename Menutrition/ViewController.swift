@@ -12,7 +12,13 @@ import VisionKit
 
 final class ViewController: UIViewController {
     
-    private var foodCollectionView: FoodCollectionView!
+    enum Section {
+        case main
+    }
+    
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Food>?
+    private let padding: CGFloat = 12
     
     var categoryClassifier: NLModel {
         do {
@@ -68,15 +74,14 @@ final class ViewController: UIViewController {
         }
     }
     
-    var foodDataArray: [FoodData] = []
+    var foodDataArray: [Food] = []
     
     var allFoodNameDictionary: [String: [String]] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        configureCollectionView()
-        configureViewDelegate()
+        setUpCollectionView()
         Task {
             allFoodNameDictionary = await sqlite.fetchAllFoodName()
         }
@@ -89,31 +94,64 @@ final class ViewController: UIViewController {
         navigationItem.title = "Menu Catcher"
         configureSubViews()
         configureConstratints()
+        setUpCollectionView()
+        setUpDataSource()
+        collectionView.delegate = self
     }
     
-    func configureCollectionView() {
-        let collectionViewLayer = UICollectionViewFlowLayout()
-        foodCollectionView = FoodCollectionView(frame: .zero, collectionViewLayout: collectionViewLayer)
-        view.addSubview(foodCollectionView)
-        foodCollectionView.backgroundColor = .white
-        foodCollectionView.translatesAutoresizingMaskIntoConstraints = false
+    private func createLayout() -> UICollectionViewLayout {
+        // The item and group will share this size to allow for automatic sizing of the cell's height
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                             heightDimension: .estimated(50))
+        
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+      
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize,
+                                                         subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = padding
+        section.contentInsets = .init(top: padding, leading: padding, bottom: padding, trailing: padding)
+        
+        return UICollectionViewCompositionalLayout(section: section)
+    }
+    
+    private func setUpCollectionView() {
+        collectionView.allowsMultipleSelection = true
+        collectionView.allowsSelection = true
+        collectionView.register(FoodCell.self, forCellWithReuseIdentifier: String(describing: FoodCell.self))
+        collectionView.backgroundColor = .white
+        
+        view.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
-            foodCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
-            foodCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            foodCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            foodCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
-        registerCollectionView()
     }
     
-    func registerCollectionView() {
-        foodCollectionView.register(FoodCollectionViewCell.self, forCellWithReuseIdentifier: FoodCollectionViewCell.identifier)
+    private func setUpDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Section, Food>(collectionView: collectionView) {
+            (collectionView, indexPath, food) -> UICollectionViewCell? in
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: String(describing: FoodCell.self),
+                for: indexPath) as? FoodCell else {
+                    fatalError("Could not cast cell as \(FoodCell.self)")
+            }
+            cell.food = food
+            return cell
+        }
+        collectionView.dataSource = dataSource
+        
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Food>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(foodDataArray)
+        dataSource?.apply(snapshot)
     }
-    
-    func configureViewDelegate() {
-        foodCollectionView.delegate = self
-        foodCollectionView.dataSource = self
-    }
+
     
     private func configureSubViews() {
         dataSingleScannerViewController.view.addSubview(catchSinggleButton)
@@ -159,12 +197,15 @@ final class ViewController: UIViewController {
             let simliarFoodName = result.0.0
             let simliarFoodTable = result.0.1
             let simliarFoodArray = result.1
-            if var foodData = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
-                foodData.recognizedText = foodName
-                foodDataArray.insert(foodData, at: foodInsertIndex)
+            if var food = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
+                food.recognizedText = foodName
+                foodDataArray.insert(food, at: foodInsertIndex)
                 foodInsertIndex += 1
                 DispatchQueue.main.async {
-                    self.foodCollectionView.reloadData()
+                    var snapshot = NSDiffableDataSourceSnapshot<Section, Food>()
+                    snapshot.appendSections([.main])
+                    snapshot.appendItems(self.foodDataArray)
+                    self.dataSource?.apply(snapshot)
                     let processTime = CFAbsoluteTimeGetCurrent() - start
                     print("경과시간 \(processTime)")
                 }
@@ -196,7 +237,6 @@ final class ViewController: UIViewController {
     
     @objc private func deleteFoodData() {
         foodDataArray.removeAll()
-        foodCollectionView.reloadData()
     }
 }
 
@@ -230,22 +270,30 @@ extension ViewController: DataScannerViewControllerDelegate {
     }
 }
 
-extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 400, height: 200)
+extension ViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView,
+                        didSelectItemAt indexPath: IndexPath) {
+        guard let dataSource = dataSource else { return }
+        collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+        dataSource.refresh()
+
+        return
     }
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return foodDataArray.count
+    func collectionView(_ collectionView: UICollectionView,
+                        didDeselectItemAt indexPath: IndexPath) {
+        guard let dataSource = dataSource else { return }
+        collectionView.deselectItem(at: indexPath, animated: true)
+        dataSource.refresh()
+
+        return
     }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        print("make cell")
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FoodCollectionViewCell.identifier, for: indexPath) as! FoodCollectionViewCell
-        let foodInfo = foodDataArray[indexPath.row]
-        cell.foodNameLabel.text = foodInfo.name
-        cell.recognizedTextLabel.text = "인식된 text: \(foodInfo.recognizedText)"
-        let tempString = "1회 제공량: \(String(foodInfo.serving))\(foodInfo.unit)\n열량: \(String(foodInfo.energy)) kcal\n단백질: \(foodInfo.protein)g\n지방: \(foodInfo.fat)g\n탄수화물: \(foodInfo.carbohydrate)g\n당류: \(foodInfo.sugar)g\n나트륨: \(foodInfo.natrium)mg\n콜레스테롤: \(foodInfo.cholesterol)mg\n포화지방: \(foodInfo.saturatedFat)mg\n트랜스지방: \(foodInfo.transFat)mg\n카페인: \(foodInfo.caffeine)mg"
-        cell.nutritionLabel.text = tempString
-        return cell
+}
+
+extension UICollectionViewDiffableDataSource {
+    /// Reapplies the current snapshot to the data source, animating the differences.
+    /// - Parameters:
+    ///   - completion: A closure to be called on completion of reapplying the snapshot.
+    func refresh(completion: (() -> Void)? = nil) {
+        self.apply(self.snapshot(), animatingDifferences: true, completion: completion)
     }
 }
