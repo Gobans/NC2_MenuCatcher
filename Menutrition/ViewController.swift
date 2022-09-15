@@ -137,6 +137,7 @@ final class ViewController: UIViewController {
                 foodArray.append(phase)
             }
         }
+        var foodInsertIndex:Int = 0
         for foodName in foodArray {
             let rmSpacingFoodName = foodName.replacingOccurrences(of: " ", with: "")
             let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 8)
@@ -160,8 +161,8 @@ final class ViewController: UIViewController {
             let simliarFoodArray = result.1
             if var foodData = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
                 foodData.recognizedText = foodName
-                foodDataArray.append(foodData)
-                foodDataArray.insert(foodData, at: foodDataArray.startIndex)
+                foodDataArray.insert(foodData, at: foodInsertIndex)
+                foodInsertIndex += 1
                 DispatchQueue.main.async {
                     self.foodCollectionView.reloadData()
                     let processTime = CFAbsoluteTimeGetCurrent() - start
@@ -169,7 +170,6 @@ final class ViewController: UIViewController {
                 }
             }
         }
-        
     }
     
     @objc private func startSinggleScanning() {
