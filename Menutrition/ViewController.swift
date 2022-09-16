@@ -88,7 +88,7 @@ final class ViewController: UIViewController {
     }
     
     private func configureUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(hexString: "FAFAFA")
         navigationItem.rightBarButtonItem = singleScanButton
         navigationItem.leftBarButtonItem = deleteButton
         navigationItem.title = "Menu Catcher"
@@ -111,7 +111,7 @@ final class ViewController: UIViewController {
 
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = padding
-        section.contentInsets = .init(top: padding, leading: padding, bottom: padding, trailing: padding)
+        section.contentInsets = .init(top: padding, leading: 20, bottom: padding, trailing: 20)
         
         return UICollectionViewCompositionalLayout(section: section)
     }
@@ -120,7 +120,7 @@ final class ViewController: UIViewController {
         collectionView.allowsMultipleSelection = true
         collectionView.allowsSelection = true
         collectionView.register(FoodCell.self, forCellWithReuseIdentifier: String(describing: FoodCell.self))
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = UIColor(hexString: "FAFAFA")
         
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -202,10 +202,7 @@ final class ViewController: UIViewController {
                 foodDataArray.insert(food, at: foodInsertIndex)
                 foodInsertIndex += 1
                 DispatchQueue.main.async {
-                    var snapshot = NSDiffableDataSourceSnapshot<Section, Food>()
-                    snapshot.appendSections([.main])
-                    snapshot.appendItems(self.foodDataArray)
-                    self.dataSource?.apply(snapshot)
+                    self.updateFoodDataSource()
                     let processTime = CFAbsoluteTimeGetCurrent() - start
                     print("경과시간 \(processTime)")
                 }
@@ -237,6 +234,14 @@ final class ViewController: UIViewController {
     
     @objc private func deleteFoodData() {
         foodDataArray.removeAll()
+        updateFoodDataSource()
+    }
+    
+    private func updateFoodDataSource() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Food>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(self.foodDataArray)
+        self.dataSource?.apply(snapshot)
     }
 }
 

@@ -27,15 +27,17 @@ class FoodCell: UICollectionViewCell {
         nameLabel.font = .preferredFont(forTextStyle: .title1)
         return nameLabel
     }()
-    private let servingLabel = UILabel()
-    private lazy var titleStackView: UIStackView = {
-        let titleStackView = UIStackView(arrangedSubviews: [foodCategoryImageView, nameLabel])
-        titleStackView.axis = .horizontal
-        titleStackView.alignment = .leading
-        titleStackView.distribution = .fillProportionally
-        titleStackView.spacing = childPadding
-        return titleStackView
+    private let subtitleLabel: UILabel = {
+        let subtitleLabel = UILabel()
+        subtitleLabel.font = .preferredFont(forTextStyle: .callout)
+        return subtitleLabel
     }()
+    private let spacerView: UIView = {
+        let spacerView = UIView()
+        spacerView.backgroundColor = .clear
+        return spacerView
+    }()
+    private let servingLabel = UILabel()
     private lazy var nutritionRootStackView: UIStackView = {
         let nutritionStackView = UIStackView(arrangedSubviews: [nutritionLeftStackView, nutritionRightStackView])
         nutritionStackView.axis = .horizontal
@@ -77,7 +79,8 @@ class FoodCell: UICollectionViewCell {
     }()
     private lazy var labelStack: UIStackView = {
         let labelStack = UIStackView(arrangedSubviews: [
-            titleStackView,
+            titleContentStackView,
+            spacerView,
             servingLabel,
             nutritionRootStackView
         ])
@@ -85,13 +88,28 @@ class FoodCell: UICollectionViewCell {
         labelStack.spacing = labelPadding
         return labelStack
     }()
+    private lazy var titleContentStackView: UIStackView = {
+        let UIStackView = UIStackView(arrangedSubviews: [foodCategoryImageView, titleLabelStackView])
+        UIStackView.axis = .horizontal
+        UIStackView.distribution = .fill
+        UIStackView.alignment = .leading
+        UIStackView.spacing = 14
+        return UIStackView
+    }()
+    private lazy var titleLabelStackView: UIStackView = {
+        let UIStackView = UIStackView(arrangedSubviews: [nameLabel, subtitleLabel])
+        UIStackView.axis = .vertical
+        UIStackView.distribution = .fillProportionally
+        return UIStackView
+    }()
     
     // Constraints
     private var closedConstraint: NSLayoutConstraint?
     private var openConstraint: NSLayoutConstraint?
     
     // Layout
-    private let rootPadding: CGFloat = 8
+    private let contentViewPadding: CGFloat = 20
+    private let rootPadding: CGFloat = 20
     private let labelPadding: CGFloat = 20
     private let childPadding: CGFloat = 8
     private let cornerRadius: CGFloat = 8
@@ -106,35 +124,44 @@ class FoodCell: UICollectionViewCell {
         setUp()
     }
     private func setUp() {
-        backgroundColor = .systemGray6
+        backgroundColor = .white
         clipsToBounds = true
         layer.cornerRadius = cornerRadius
         
         contentView.addSubview(rootStack)
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        rootStack.translatesAutoresizingMaskIntoConstraints = false
         
         setUpConstraints()
         updateAppearance()
     }
     
     private func setUpConstraints() {
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: topAnchor),
             contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+        
+        rootStack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
             rootStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: rootPadding),
             rootStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: rootPadding),
             rootStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -rootPadding),
         ])
         
+        foodCategoryImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            foodCategoryImageView.heightAnchor.constraint(equalTo: titleLabelStackView.heightAnchor),
+            foodCategoryImageView.widthAnchor.constraint(equalTo: titleContentStackView.widthAnchor, multiplier: 0.2)
+        ])
+        
         closedConstraint =
-        nameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -rootPadding)
+        titleContentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -labelPadding)
         closedConstraint?.priority = .defaultLow // use low priority so stack stays pinned to top of cell
         
         openConstraint =
-        nutritionRootStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -rootPadding)
+        nutritionRootStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -labelPadding)
         openConstraint?.priority = .defaultLow
     }
     
@@ -148,6 +175,7 @@ class FoodCell: UICollectionViewCell {
         fatLabel.text = "지방 | \(food.fat)g"
         sugarLabel.text = "당류 | \(food.sugar)g"
         caffeineLabel.text = "카페인 | \(food.caffeine)mg"
+        subtitleLabel.text = "식사류"
     }
     private func updateAppearance() {
         closedConstraint?.isActive = !isSelected
