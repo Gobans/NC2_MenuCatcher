@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 class FoodCell: UICollectionViewCell {
-    
     static let identifier = "FoodCollectionViewCell"
     
     var food: Food? { didSet { updateContent() } }
@@ -24,17 +23,19 @@ class FoodCell: UICollectionViewCell {
     }()
     private let nameLabel: UILabel = {
         let nameLabel = UILabel()
-        nameLabel.font = .preferredFont(forTextStyle: .title1)
+        nameLabel.font = UIFont.preferredFont(forTextStyle: .title1)
         return nameLabel
     }()
     private let subtitleLabel: UILabel = {
         let subtitleLabel = UILabel()
-        subtitleLabel.font = .preferredFont(forTextStyle: .callout)
+        subtitleLabel.font = UIFont.preferredFont(forTextStyle: .callout)
         return subtitleLabel
     }()
     private let spacerView: UIView = {
         let spacerView = UIView()
-        spacerView.backgroundColor = .clear
+        spacerView.backgroundColor = .black
+        spacerView.layer.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1).cgColor
+        spacerView.frame = CGRect(x: 0, y: 0, width: 320, height: 1)
         return spacerView
     }()
     private let servingLabel = UILabel()
@@ -43,26 +44,62 @@ class FoodCell: UICollectionViewCell {
         nutritionStackView.axis = .horizontal
         nutritionStackView.alignment = .leading
         nutritionStackView.distribution = .fillEqually
+        nutritionStackView.spacing = 30
         return nutritionStackView
     }()
     private lazy var nutritionLeftStackView: UIStackView = {
-        let nutritionLeftStackView = UIStackView(arrangedSubviews: [energyLabel, carbohydrateLabel, proteinLabel])
-        nutritionLeftStackView.axis = .vertical
-        nutritionLeftStackView.spacing = childPadding
+        let nutritionLeftStackView = UIStackView(arrangedSubviews: [nutritionLeftLabelStackView, nutritionLeftNumberStackView])
+        nutritionLeftStackView.axis = .horizontal
+        nutritionLeftStackView.distribution = .fillProportionally
+        nutritionLeftStackView.spacing = 10
         return nutritionLeftStackView
     }()
     private lazy var nutritionRightStackView: UIStackView = {
-        let nutritionRightStackView = UIStackView(arrangedSubviews: [fatLabel, sugarLabel, caffeineLabel])
-        nutritionRightStackView.axis = .vertical
-        nutritionRightStackView.spacing = childPadding
+        let nutritionRightStackView = UIStackView(arrangedSubviews: [nutritionRightLabelStackView, nutritionRightNumberStackView])
+        nutritionRightStackView.axis = .horizontal
+        nutritionRightStackView.distribution = .fillProportionally
+        nutritionRightStackView.spacing = 10
         return nutritionRightStackView
     }()
-    private let energyLabel = UILabel()
-    private let carbohydrateLabel = UILabel()
-    private let proteinLabel = UILabel()
-    private let fatLabel = UILabel()
-    private let sugarLabel = UILabel()
-    private let caffeineLabel = UILabel()
+    private lazy var nutritionLeftLabelStackView: UIStackView = {
+        let nutritionLeftStackView = UIStackView(arrangedSubviews: [energyLabel, carbohydrateLabel, proteinLabel])
+        nutritionLeftStackView.axis = .vertical
+        nutritionLeftStackView.spacing = 10
+        return nutritionLeftStackView
+    }()
+    private lazy var nutritionRightLabelStackView: UIStackView = {
+        let nutritionRightStackView = UIStackView(arrangedSubviews: [fatLabel, sugarLabel, caffeineLabel])
+        nutritionRightStackView.axis = .vertical
+        nutritionRightStackView.spacing = 10
+        return nutritionRightStackView
+    }()
+    private lazy var nutritionLeftNumberStackView: UIStackView = {
+        let nutritionLeftStackView = UIStackView(arrangedSubviews: [energyNumberLabel, carbohydrateNumberLabel, proteinNumberLabel])
+        nutritionLeftStackView.axis = .vertical
+        nutritionLeftStackView.spacing = 10
+        return nutritionLeftStackView
+    }()
+    private lazy var nutritionRightNumberStackView: UIStackView = {
+        let nutritionRightStackView = UIStackView(arrangedSubviews: [fatNumberLabel, sugarNumberLabel, caffeineNumberLabel])
+        nutritionRightStackView.axis = .vertical
+        nutritionRightStackView.spacing = 10
+        return nutritionRightStackView
+    }()
+    private lazy var nutritionLabels: [NutritionPaddingLabel] = [energyLabel, carbohydrateLabel, proteinLabel, fatLabel, sugarLabel, caffeineLabel]
+    private lazy var nutritionNumberLabels: [UILabel] = [energyNumberLabel, carbohydrateNumberLabel, proteinNumberLabel, fatNumberLabel, sugarNumberLabel, caffeineNumberLabel]
+    private let nutritionLabelText: [String] = ["열량", "탄수화물", "단백질", "지방", "당류", "카페인"]
+    private let energyLabel = NutritionPaddingLabel()
+    private let carbohydrateLabel = NutritionPaddingLabel()
+    private let proteinLabel = NutritionPaddingLabel()
+    private let fatLabel = NutritionPaddingLabel()
+    private let sugarLabel = NutritionPaddingLabel()
+    private let caffeineLabel = NutritionPaddingLabel()
+    private let energyNumberLabel = UILabel()
+    private let carbohydrateNumberLabel = UILabel()
+    private let proteinNumberLabel = UILabel()
+    private let fatNumberLabel = UILabel()
+    private let sugarNumberLabel = UILabel()
+    private let caffeineNumberLabel = UILabel()
     private let disclosureIndicator: UIImageView = {
         let disclosureIndicator = UIImageView()
         disclosureIndicator.image = UIImage(systemName: "chevron.down")
@@ -72,7 +109,7 @@ class FoodCell: UICollectionViewCell {
     }()
     
     private lazy var rootStack: UIStackView = {
-        let rootStack = UIStackView(arrangedSubviews: [labelStack, disclosureIndicator])
+        let rootStack = UIStackView(arrangedSubviews: [labelStack])
         rootStack.alignment = .top
         rootStack.distribution = .fillProportionally
         return rootStack
@@ -113,6 +150,7 @@ class FoodCell: UICollectionViewCell {
     private let labelPadding: CGFloat = 20
     private let childPadding: CGFloat = 8
     private let cornerRadius: CGFloat = 8
+    private let nutritionPadding: CGFloat = 22
     
     
     required init?(coder: NSCoder) {
@@ -124,17 +162,34 @@ class FoodCell: UICollectionViewCell {
         setUp()
     }
     private func setUp() {
-        backgroundColor = .white
-        clipsToBounds = true
-        layer.cornerRadius = cornerRadius
-        
-        contentView.addSubview(rootStack)
-        
+        configureUI()
         setUpConstraints()
         updateAppearance()
     }
     
+    private func configureUI() {
+        backgroundColor = .white
+        clipsToBounds = true
+        layer.cornerRadius = cornerRadius
+        servingLabel.font = UIFont(name: "SFPro-Medium", size: 11)
+        nutritionLabels.enumerated().forEach{(index, label) in
+            label.text = "\(nutritionLabelText[index])"
+            label.font = UIFont(name: "SFPro-Medium", size: 11)
+            label.textAlignment = .center
+            label.textColor = .white
+            label.backgroundColor = .black
+            label.layer.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1).cgColor
+            label.layer.cornerRadius = 12
+            label.layer.masksToBounds = true
+        }
+        nutritionNumberLabels.enumerated().forEach{(index, label) in
+            label.font = UIFont(name: "SFPro-Medium", size: 11)
+            label.textAlignment = .center
+        }
+    }
+    
     private func setUpConstraints() {
+        contentView.addSubview(rootStack)
         contentView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: topAnchor),
@@ -156,6 +211,30 @@ class FoodCell: UICollectionViewCell {
             foodCategoryImageView.widthAnchor.constraint(equalTo: titleContentStackView.widthAnchor, multiplier: 0.2)
         ])
         
+        contentView.addSubview(disclosureIndicator)
+        disclosureIndicator.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            disclosureIndicator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -31),
+            disclosureIndicator.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
+        ])
+        
+        energyNumberLabel.translatesAutoresizingMaskIntoConstraints = false
+        carbohydrateNumberLabel.translatesAutoresizingMaskIntoConstraints = false
+        proteinNumberLabel.translatesAutoresizingMaskIntoConstraints = false
+        fatNumberLabel.translatesAutoresizingMaskIntoConstraints = false
+        sugarNumberLabel.translatesAutoresizingMaskIntoConstraints = false
+        caffeineNumberLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            energyNumberLabel.centerYAnchor.constraint(equalTo: energyLabel.centerYAnchor),
+            carbohydrateNumberLabel.centerYAnchor.constraint(equalTo: carbohydrateLabel.centerYAnchor),
+            proteinNumberLabel.centerYAnchor.constraint(equalTo: proteinLabel.centerYAnchor),
+            fatNumberLabel.centerYAnchor.constraint(equalTo: fatLabel.centerYAnchor),
+            sugarNumberLabel.centerYAnchor.constraint(equalTo: sugarLabel.centerYAnchor),
+            caffeineNumberLabel.centerYAnchor.constraint(equalTo: caffeineLabel.centerYAnchor),
+        ])
+        
+        
+        
         closedConstraint =
         titleContentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -labelPadding)
         closedConstraint?.priority = .defaultLow // use low priority so stack stays pinned to top of cell
@@ -169,12 +248,15 @@ class FoodCell: UICollectionViewCell {
         guard let food = food else { return }
         nameLabel.text = food.name
         servingLabel.text = "1회 제공량 : \(food.serving)\(food.unit)"
-        energyLabel.text = "열량 | \(food.energy)kcal"
-        carbohydrateLabel.text = "탄수화물 | \(food.carbohydrate)g"
-        proteinLabel.text = "단백질 | \(food.protein)g"
-        fatLabel.text = "지방 | \(food.fat)g"
-        sugarLabel.text = "당류 | \(food.sugar)g"
-        caffeineLabel.text = "카페인 | \(food.caffeine)mg"
+        let attributedStr = NSMutableAttributedString(string: servingLabel.text!)
+        attributedStr.addAttribute(.foregroundColor, value: UIColor(hexString: "#CFCFCF"), range: (servingLabel.text! as NSString).range(of: "1회 제공량 :"))
+        servingLabel.attributedText = attributedStr
+        energyNumberLabel.text = "\(food.energy)kcal"
+        carbohydrateNumberLabel.text = "\(food.carbohydrate)g"
+        proteinNumberLabel.text = "\(food.protein)g"
+        fatNumberLabel.text = "\(food.fat)g"
+        sugarNumberLabel.text = "\(food.sugar)g"
+        caffeineNumberLabel.text = "\(food.caffeine)mg"
         subtitleLabel.text = "식사류"
     }
     private func updateAppearance() {
