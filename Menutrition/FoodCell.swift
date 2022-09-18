@@ -29,13 +29,17 @@ class FoodCell: UICollectionViewCell {
     private let subtitleLabel: UILabel = {
         let subtitleLabel = UILabel()
         subtitleLabel.font = UIFont.preferredFont(forTextStyle: .callout)
+        subtitleLabel.textColor = UIColor(hexString: "#868686")
         return subtitleLabel
     }()
     private let spacerView: UIView = {
         let spacerView = UIView()
-        spacerView.backgroundColor = .black
-        spacerView.layer.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1).cgColor
-        spacerView.frame = CGRect(x: 0, y: 0, width: 320, height: 1)
+        spacerView.backgroundColor = .clear
+        return spacerView
+    }()
+    private let seperatorView: UIView = {
+        let spacerView = UIView()
+        spacerView.backgroundColor = .clear
         return spacerView
     }()
     private let servingLabel = UILabel()
@@ -218,6 +222,15 @@ class FoodCell: UICollectionViewCell {
             disclosureIndicator.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
         ])
         
+        contentView.addSubview(seperatorView)
+        seperatorView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            seperatorView.widthAnchor.constraint(equalTo: rootStack.widthAnchor),
+            seperatorView.heightAnchor.constraint(equalToConstant: 1),
+            seperatorView.centerXAnchor.constraint(equalTo: rootStack.centerXAnchor),
+            seperatorView.centerYAnchor.constraint(equalTo: spacerView.centerYAnchor)
+        ])
+        
         energyNumberLabel.translatesAutoresizingMaskIntoConstraints = false
         carbohydrateNumberLabel.translatesAutoresizingMaskIntoConstraints = false
         proteinNumberLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -262,6 +275,7 @@ class FoodCell: UICollectionViewCell {
     private func updateAppearance() {
         closedConstraint?.isActive = !isSelected
         openConstraint?.isActive = isSelected
+        seperatorView.backgroundColor = isSelected ? UIColor(hexString: "#EFEFEF") : .clear
         UIView.animate(withDuration: 0.3) { // 0.3 seconds matches collection view animation
             // Set the rotation just under 180º so that it rotates back the same way
             let upsideDown = CGAffineTransform(rotationAngle: .pi * 0.999 )
