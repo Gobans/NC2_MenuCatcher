@@ -106,9 +106,10 @@ class FoodCell: UICollectionViewCell {
     private let caffeineNumberLabel = UILabel()
     private let disclosureIndicator: UIImageView = {
         let disclosureIndicator = UIImageView()
-        disclosureIndicator.image = UIImage(systemName: "chevron.down")
+        disclosureIndicator.image = UIImage(systemName: "arrowtriangle.down.fill")
         disclosureIndicator.contentMode = .scaleAspectFit
         disclosureIndicator.preferredSymbolConfiguration = .init(textStyle: .body, scale: .small)
+        disclosureIndicator.tintColor = .black
         return disclosureIndicator
     }()
     
