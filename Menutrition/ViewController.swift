@@ -105,13 +105,14 @@ final class ViewController: UIViewController {
                                              heightDimension: .estimated(50))
         
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
+//        item.edgeSpacing = .init(leading: .fixed(0), top: .fixed(0), trailing: .fixed(0), bottom: .fixed(80))
       
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize,
                                                          subitems: [item])
-
+        
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = padding
-        section.contentInsets = .init(top: padding, leading: 20, bottom: padding, trailing: 20)
+        section.contentInsets = .init(top: padding, leading: 20, bottom: 120, trailing: 20)
         
         return UICollectionViewCompositionalLayout(section: section)
     }

@@ -38,18 +38,20 @@ class FoodCell: UICollectionViewCell {
         return spacerView
     }()
     private let seperatorView: UIView = {
-        let spacerView = UIView()
-        spacerView.backgroundColor = .clear
-        return spacerView
+        let seperatorView = UIView()
+        seperatorView.backgroundColor = .clear
+        return seperatorView
     }()
     private let servingLabel = UILabel()
     private lazy var nutritionRootStackView: UIStackView = {
-        let nutritionStackView = UIStackView(arrangedSubviews: [nutritionLeftStackView, nutritionRightStackView])
-        nutritionStackView.axis = .horizontal
-        nutritionStackView.alignment = .leading
-        nutritionStackView.distribution = .fillEqually
-        nutritionStackView.spacing = 30
-        return nutritionStackView
+        let nutritionRootStackView = UIStackView(arrangedSubviews: [nutritionLeftStackView, nutritionRightStackView])
+        nutritionRootStackView.axis = .horizontal
+        nutritionRootStackView.alignment = .leading
+        nutritionRootStackView.distribution = .fillEqually
+        nutritionRootStackView.spacing = 30
+        nutritionRootStackView.isLayoutMarginsRelativeArrangement = true
+        nutritionRootStackView.layoutMargins.bottom = 30
+        return nutritionRootStackView
     }()
     private lazy var nutritionLeftStackView: UIStackView = {
         let nutritionLeftStackView = UIStackView(arrangedSubviews: [nutritionLeftLabelStackView, nutritionLeftNumberStackView])
@@ -247,14 +249,12 @@ class FoodCell: UICollectionViewCell {
             caffeineNumberLabel.centerYAnchor.constraint(equalTo: caffeineLabel.centerYAnchor),
         ])
         
-        
-        
         closedConstraint =
         titleContentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -labelPadding)
         closedConstraint?.priority = .defaultLow // use low priority so stack stays pinned to top of cell
         
         openConstraint =
-        nutritionRootStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -labelPadding)
+        nutritionRootStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         openConstraint?.priority = .defaultLow
     }
     
