@@ -22,6 +22,7 @@ struct Food {
     let saturatedFat: Double
     let transFat: Double
     let caffeine: Double
+    let category: String
     var recognizedText: String = ""
 }
 

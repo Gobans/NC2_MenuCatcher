@@ -282,7 +282,7 @@ class FoodCell: UICollectionViewCell {
         fatNumberLabel.text = "\(food.fat)g"
         sugarNumberLabel.text = "\(food.sugar)g"
         caffeineNumberLabel.text = "\(food.caffeine)mg"
-        subtitleLabel.text = "식사류"
+        subtitleLabel.text = food.category
     }
     private func updateAppearance() {
         closedConstraint?.isActive = !isSelected

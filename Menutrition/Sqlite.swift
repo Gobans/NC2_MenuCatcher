@@ -84,7 +84,8 @@ final class Sqlite {
                 cholesterol: foodInfo[cholesterolExpression],
                 saturatedFat: foodInfo[saturatedFatExpression],
                 transFat: foodInfo[transFatExpression],
-                caffeine: foodInfo[caffeineExpression]
+                caffeine: foodInfo[caffeineExpression],
+                category: tableName
             )
         }catch {
             print(error)

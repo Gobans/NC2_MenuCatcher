@@ -11,8 +11,8 @@ import Foundation
 class NutritionPaddingLabel: UILabel {
     var topInset: CGFloat = 3.0
     var bottomInset: CGFloat = 3.0
-    var leftInset: CGFloat = 5
-    var rightInset: CGFloat = 5
+    var leftInset: CGFloat = 0
+    var rightInset: CGFloat = 0
  
     override func drawText(in rect: CGRect) {
         let insets = UIEdgeInsets(top: topInset, left: leftInset, bottom: bottomInset, right: rightInset)
