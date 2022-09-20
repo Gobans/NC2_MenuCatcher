@@ -23,12 +23,12 @@ class FoodCell: UICollectionViewCell {
     }()
     private let nameLabel: UILabel = {
         let nameLabel = UILabel()
-        nameLabel.font = UIFont.preferredFont(forTextStyle: .title1)
+        nameLabel.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 17)
         return nameLabel
     }()
     private let subtitleLabel: UILabel = {
         let subtitleLabel = UILabel()
-        subtitleLabel.font = UIFont.preferredFont(forTextStyle: .callout)
+        subtitleLabel.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 11)
         subtitleLabel.textColor = UIColor(hexString: "#868686")
         return subtitleLabel
     }()
@@ -108,7 +108,7 @@ class FoodCell: UICollectionViewCell {
     private let caffeineNumberLabel = UILabel()
     private let disclosureIndicator: UIImageView = {
         let disclosureIndicator = UIImageView()
-        disclosureIndicator.image = UIImage(systemName: "arrowtriangle.down.fill")
+        disclosureIndicator.image = UIImage(systemName: "triangle.fill")
         disclosureIndicator.contentMode = .scaleAspectFit
         disclosureIndicator.preferredSymbolConfiguration = .init(textStyle: .body, scale: .small)
         disclosureIndicator.tintColor = .black
@@ -172,16 +172,17 @@ class FoodCell: UICollectionViewCell {
         configureUI()
         setUpConstraints()
         updateAppearance()
+        
     }
     
     private func configureUI() {
         backgroundColor = .white
         clipsToBounds = true
         layer.cornerRadius = cornerRadius
-        servingLabel.font = UIFont(name: "SFPro-Medium", size: 11)
+        servingLabel.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 11)
         nutritionLabels.enumerated().forEach{(index, label) in
             label.text = "\(nutritionLabelText[index])"
-            label.font = UIFont(name: "SFPro-Medium", size: 11)
+            label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 11)
             label.textAlignment = .center
             label.textColor = .white
             label.backgroundColor = .black
@@ -190,7 +191,7 @@ class FoodCell: UICollectionViewCell {
             label.layer.masksToBounds = true
         }
         nutritionNumberLabels.enumerated().forEach{(index, label) in
-            label.font = UIFont(name: "SFPro-Medium", size: 11)
+            label.font = UIFont(name: "Roboto-SemiBold", size: 13)
             label.textAlignment = .center
         }
     }
@@ -249,6 +250,16 @@ class FoodCell: UICollectionViewCell {
             caffeineNumberLabel.centerYAnchor.constraint(equalTo: caffeineLabel.centerYAnchor),
         ])
         
+        nutritionLeftLabelStackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            nutritionLeftLabelStackView.widthAnchor.constraint(equalTo: rootStack.widthAnchor, multiplier: 0.2)
+        ])
+        
+        nutritionRightLabelStackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            nutritionRightLabelStackView.widthAnchor.constraint(equalTo: rootStack.widthAnchor, multiplier: 0.2)
+        ])
+        
         closedConstraint =
         titleContentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -labelPadding)
         closedConstraint?.priority = .defaultLow // use low priority so stack stays pinned to top of cell
@@ -277,10 +288,11 @@ class FoodCell: UICollectionViewCell {
         closedConstraint?.isActive = !isSelected
         openConstraint?.isActive = isSelected
         seperatorView.backgroundColor = isSelected ? UIColor(hexString: "#EFEFEF") : .clear
-        UIView.animate(withDuration: 0.3) { // 0.3 seconds matches collection view animation
-            // Set the rotation just under 180º so that it rotates back the same way
-            let upsideDown = CGAffineTransform(rotationAngle: .pi * 0.999 )
-            self.disclosureIndicator.transform = self.isSelected ? upsideDown :.identity
+        UIView.animate(withDuration: 0.3) {
+            let down = CGAffineTransform(rotationAngle: .pi)
+            let up = CGAffineTransform(rotationAngle: .pi * 2)
+            self.disclosureIndicator.transform = self.isSelected ? up : down
         }
     }
 }
+ 

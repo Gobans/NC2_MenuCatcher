@@ -40,9 +40,16 @@ final class ViewController: UIViewController {
         return viewController
     }()
     
-    lazy var singleScanButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "text.viewfinder") , style: .plain, target: self, action: #selector(startSinggleScanning))
-        button.tintColor = .systemBlue
+    lazy var singleScanButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "text.viewfinder"), for: .normal)
+//        button.imageView?.contentMode = .scaleAspectFit
+        button.contentMode = .scaleAspectFill
+        button.addTarget(self, action: #selector(startSinggleScanning), for: .touchUpInside)
+        button.tintColor = .white
+        button.backgroundColor = .black
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 0.5 * 60
         return button
     }()
     
@@ -89,9 +96,9 @@ final class ViewController: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = UIColor(hexString: "FAFAFA")
-        navigationItem.rightBarButtonItem = singleScanButton
         navigationItem.leftBarButtonItem = deleteButton
-        navigationItem.title = "Menu Catcher"
+        navigationItem.title = "메뉴캐처"
+        navigationController?.navigationBar.titleTextAttributes = [.font: UIFont.preferredFont(forTextStyle: .title3)]
         configureSubViews()
         configureConstratints()
         setUpCollectionView()
@@ -105,14 +112,12 @@ final class ViewController: UIViewController {
                                              heightDimension: .estimated(50))
         
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-//        item.edgeSpacing = .init(leading: .fixed(0), top: .fixed(0), trailing: .fixed(0), bottom: .fixed(80))
-      
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize,
                                                          subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = padding
-        section.contentInsets = .init(top: padding, leading: 20, bottom: 120, trailing: 20)
+        section.contentInsets = .init(top: 40, leading: 20, bottom: 120, trailing: 20)
         
         return UICollectionViewCompositionalLayout(section: section)
     }
@@ -155,6 +160,7 @@ final class ViewController: UIViewController {
 
     
     private func configureSubViews() {
+        collectionView.addSubview(singleScanButton)
         dataSingleScannerViewController.view.addSubview(catchSinggleButton)
     }
     
@@ -165,6 +171,14 @@ final class ViewController: UIViewController {
             catchSinggleButton.bottomAnchor.constraint(equalTo: dataSingleScannerViewController.view.bottomAnchor, constant: -100),
             catchSinggleButton.widthAnchor.constraint(equalToConstant: 110),
             catchSinggleButton.heightAnchor.constraint(equalToConstant: 60)
+        ])
+        
+        singleScanButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            singleScanButton.bottomAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.bottomAnchor, constant: -40),
+            singleScanButton.trailingAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.trailingAnchor, constant: -30),
+            singleScanButton.heightAnchor.constraint(equalToConstant: 60),
+            singleScanButton.widthAnchor.constraint(equalToConstant: 60)
         ])
     }
     
