@@ -136,7 +136,6 @@ class FoodCell: UICollectionViewCell {
         let UIStackView = UIStackView(arrangedSubviews: [foodCategoryImageView, titleLabelStackView])
         UIStackView.axis = .horizontal
         UIStackView.distribution = .fill
-//        UIStackView.alignment = .center
         UIStackView.spacing = 14
         return UIStackView
     }()
@@ -218,11 +217,6 @@ class FoodCell: UICollectionViewCell {
             foodCategoryImageView.heightAnchor.constraint(equalToConstant: 52),
             foodCategoryImageView.widthAnchor.constraint(equalTo: titleContentStackView.widthAnchor, multiplier: 0.2)
         ])
-
-//        titleLabelStackView.translatesAutoresizingMaskIntoConstraints = false
-//        NSLayoutConstraint.activate([
-//            titleLabelStackView.centerYAnchor.constraint(equalTo: foodCategoryImageView.centerYAnchor),
-//        ])
         
         contentView.addSubview(disclosureIndicator)
         disclosureIndicator.translatesAutoresizingMaskIntoConstraints = false
