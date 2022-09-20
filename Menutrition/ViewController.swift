@@ -42,13 +42,13 @@ final class ViewController: UIViewController {
     
     lazy var singleScanButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "text.viewfinder"), for: .normal)
-//        button.imageView?.contentMode = .scaleAspectFit
-        button.contentMode = .scaleAspectFill
+        let imageConfiguration = UIImage.SymbolConfiguration.init(pointSize: 25)
+        let viewfinderImageView = UIImage(systemName: "text.viewfinder", withConfiguration: imageConfiguration)
+        button.setImage(viewfinderImageView, for: .normal)
+        button.clipsToBounds = true
         button.addTarget(self, action: #selector(startSinggleScanning), for: .touchUpInside)
         button.tintColor = .white
         button.backgroundColor = .black
-        button.clipsToBounds = true
         button.layer.cornerRadius = 0.5 * 60
         return button
     }()
