@@ -97,8 +97,8 @@ final class ViewController: UIViewController {
     private func configureUI() {
         view.backgroundColor = UIColor(hexString: "FAFAFA")
         navigationItem.leftBarButtonItem = deleteButton
-        navigationItem.title = "메뉴캐처"
-        navigationController?.navigationBar.titleTextAttributes = [.font: UIFont.preferredFont(forTextStyle: .title3)]
+        navigationItem.title = "메뉴 캐처"
+        navigationController?.navigationBar.prefersLargeTitles = true
         configureSubViews()
         configureConstratints()
         setUpCollectionView()
