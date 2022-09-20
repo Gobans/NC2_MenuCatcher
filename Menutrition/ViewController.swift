@@ -12,7 +12,13 @@ import VisionKit
 
 final class ViewController: UIViewController {
     
-    private var foodCollectionView: FoodCollectionView!
+    enum Section {
+        case main
+    }
+    
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Food>?
+    private let padding: CGFloat = 12
     
     var categoryClassifier: NLModel {
         do {
@@ -28,43 +34,28 @@ final class ViewController: UIViewController {
     
     let sqlite = Sqlite.shared
     
-    lazy var dataMultipleScannerViewController: DataScannerViewController = {
-        let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: true, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: true, isHighlightingEnabled: true)
-        viewController.delegate = self
-        return viewController
-    }()
-    
     lazy var dataSingleScannerViewController: DataScannerViewController = {
-        let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: false, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: true, isHighlightingEnabled: true)
+        let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: false, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: false, isHighlightingEnabled: true)
         viewController.delegate = self
         return viewController
     }()
     
-    lazy var multiScanButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "text.viewfinder") , style: .plain, target: self, action: #selector(startMultipleScanning))
-        button.tintColor = .systemBlue
-        return button
-    }()
-    
-    lazy var singleScanButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "viewfinder") , style: .plain, target: self, action: #selector(startSinggleScanning))
-        button.tintColor = .systemBlue
+    lazy var singleScanButton: UIButton = {
+        let button = UIButton()
+        let imageConfiguration = UIImage.SymbolConfiguration.init(pointSize: 25)
+        let viewfinderImageView = UIImage(systemName: "text.viewfinder", withConfiguration: imageConfiguration)
+        button.setImage(viewfinderImageView, for: .normal)
+        button.clipsToBounds = true
+        button.addTarget(self, action: #selector(startSinggleScanning), for: .touchUpInside)
+        button.tintColor = .white
+        button.backgroundColor = .black
+        button.layer.cornerRadius = 0.5 * 60
         return button
     }()
     
     lazy var deleteButton: UIBarButtonItem = {
         let button = UIBarButtonItem(image: UIImage(systemName: "trash") , style: .plain, target: self, action: #selector(deleteFoodData))
         button.tintColor = .systemBlue
-        return button
-    }()
-    
-    lazy var catchMultipleButton: UIButton = {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(catchText), for: .touchUpInside)
-        button.configuration = .filled()
-        button.setTitle("Catch", for: .normal)
-        button.isUserInteractionEnabled = false
-        button.configuration?.background.backgroundColor = .gray
         return button
     }()
     
@@ -78,99 +69,102 @@ final class ViewController: UIViewController {
         return button
     }()
     
-    enum ScannerMode {
-        case single
-        case multiple
-    }
-    
-    var scannerMode = ScannerMode.single
-    
     var currentItems: [RecognizedItem.ID: String] = [:] {
         didSet {
             if currentItems.isEmpty {
-                switch scannerMode {
-                case .single:
-                    catchSinggleButton.isUserInteractionEnabled = false
-                    catchSinggleButton.configuration?.background.backgroundColor = .gray
-                case .multiple:
-                    catchMultipleButton.isUserInteractionEnabled = false
-                    catchMultipleButton.configuration?.background.backgroundColor = .gray
-                }
+                catchSinggleButton.isUserInteractionEnabled = false
+                catchSinggleButton.configuration?.background.backgroundColor = .gray
             } else {
-                switch scannerMode {
-                case .single:
-                    catchSinggleButton.isUserInteractionEnabled = true
-                    catchSinggleButton.configuration?.background.backgroundColor = .systemBlue
-                case .multiple:
-                    catchMultipleButton.isUserInteractionEnabled = true
-                    catchMultipleButton.configuration?.background.backgroundColor = .systemBlue
-                }
+                catchSinggleButton.isUserInteractionEnabled = true
+                catchSinggleButton.configuration?.background.backgroundColor = .systemBlue
             }
         }
     }
     
-    var foodDataArray: [FoodData] = []
+    var foodDataArray: [Food] = []
     
     var allFoodNameDictionary: [String: [String]] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        configureCollectionView()
-        configureViewDelegate()
+        setUpCollectionView()
         Task {
             allFoodNameDictionary = await sqlite.fetchAllFoodName()
-            print(allFoodNameDictionary)
         }
     }
     
     private func configureUI() {
-        view.backgroundColor = .white
-        navigationItem.rightBarButtonItems = [singleScanButton, multiScanButton]
+        view.backgroundColor = UIColor(hexString: "FAFAFA")
         navigationItem.leftBarButtonItem = deleteButton
-        navigationItem.title = "Menu Catcher"
+        navigationItem.title = "메뉴캐처"
+        navigationController?.navigationBar.titleTextAttributes = [.font: UIFont.preferredFont(forTextStyle: .title3)]
         configureSubViews()
         configureConstratints()
+        setUpCollectionView()
+        setUpDataSource()
+        collectionView.delegate = self
     }
     
-    func configureCollectionView() {
-        let collectionViewLayer = UICollectionViewFlowLayout()
-        foodCollectionView = FoodCollectionView(frame: .zero, collectionViewLayout: collectionViewLayer)
-        view.addSubview(foodCollectionView)
-        foodCollectionView.backgroundColor = .white
-        foodCollectionView.translatesAutoresizingMaskIntoConstraints = false
+    private func createLayout() -> UICollectionViewLayout {
+        // The item and group will share this size to allow for automatic sizing of the cell's height
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                             heightDimension: .estimated(50))
+        
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize,
+                                                         subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = padding
+        section.contentInsets = .init(top: 40, leading: 20, bottom: 120, trailing: 20)
+        
+        return UICollectionViewCompositionalLayout(section: section)
+    }
+    
+    private func setUpCollectionView() {
+        collectionView.allowsMultipleSelection = true
+        collectionView.allowsSelection = true
+        collectionView.register(FoodCell.self, forCellWithReuseIdentifier: String(describing: FoodCell.self))
+        collectionView.backgroundColor = UIColor(hexString: "FAFAFA")
+        
+        view.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
-            foodCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
-            foodCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            foodCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            foodCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
-        registerCollectionView()
     }
     
-    func registerCollectionView() {
-        foodCollectionView.register(FoodCollectionViewCell.self, forCellWithReuseIdentifier: FoodCollectionViewCell.identifier)
+    private func setUpDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Section, Food>(collectionView: collectionView) {
+            (collectionView, indexPath, food) -> UICollectionViewCell? in
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: String(describing: FoodCell.self),
+                for: indexPath) as? FoodCell else {
+                    fatalError("Could not cast cell as \(FoodCell.self)")
+            }
+            cell.food = food
+            return cell
+        }
+        collectionView.dataSource = dataSource
+        
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Food>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(foodDataArray)
+        dataSource?.apply(snapshot)
     }
-    
-    func configureViewDelegate() {
-        foodCollectionView.delegate = self
-        foodCollectionView.dataSource = self
-    }
+
     
     private func configureSubViews() {
-        dataMultipleScannerViewController.view.addSubview(catchMultipleButton)
+        collectionView.addSubview(singleScanButton)
         dataSingleScannerViewController.view.addSubview(catchSinggleButton)
     }
     
     private func configureConstratints() {
-        catchMultipleButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            catchMultipleButton.centerXAnchor.constraint(equalTo: dataMultipleScannerViewController.view.centerXAnchor),
-            catchMultipleButton.bottomAnchor.constraint(equalTo: dataMultipleScannerViewController.view.bottomAnchor, constant: -100),
-            catchMultipleButton.widthAnchor.constraint(equalToConstant: 110),
-            catchMultipleButton.heightAnchor.constraint(equalToConstant: 60)
-        ])
-        
         catchSinggleButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             catchSinggleButton.centerXAnchor.constraint(equalTo: dataSingleScannerViewController.view.centerXAnchor),
@@ -178,17 +172,25 @@ final class ViewController: UIViewController {
             catchSinggleButton.widthAnchor.constraint(equalToConstant: 110),
             catchSinggleButton.heightAnchor.constraint(equalToConstant: 60)
         ])
+        
+        singleScanButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            singleScanButton.bottomAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.bottomAnchor, constant: -40),
+            singleScanButton.trailingAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.trailingAnchor, constant: -30),
+            singleScanButton.heightAnchor.constraint(equalToConstant: 60),
+            singleScanButton.widthAnchor.constraint(equalToConstant: 60)
+        ])
     }
     
-    private func endScan(splitedStringArray: [String]) {
+    private func endScan(splitedStringArray: [String]) async {
         let start = CFAbsoluteTimeGetCurrent()
         var foodArray: [String] = []
         for phase in splitedStringArray {
             if textProcessing.isValidWord(phase) {
-                print(phase)
                 foodArray.append(phase)
             }
         }
+        var foodInsertIndex:Int = 0
         for foodName in foodArray {
             let rmSpacingFoodName = foodName.replacingOccurrences(of: " ", with: "")
             let predictedTable = categoryClassifier.predictedLabelHypotheses(for: foodName, maximumCount: 8)
@@ -197,10 +199,8 @@ final class ViewController: UIViewController {
             let _ =  sortedPredictedTable.map {
                 vaildfoodNameDictionary[$0] = []
             }
-            print(sortedPredictedTable)
             for table in sortedPredictedTable {
                 guard let vaildFoodNameArray = allFoodNameDictionary[table] else {
-                    print("Invaild Food Table")
                     return
                 }
                 let vaildConsonantFood = textProcessing.checkVaildConsonantFood(verifyString: rmSpacingFoodName, dbFoodNameArray: vaildFoodNameArray)
@@ -208,21 +208,18 @@ final class ViewController: UIViewController {
                     vaildfoodNameDictionary[table]?.append($0)
                 }
             }
-            print(vaildfoodNameDictionary)
             let result = textProcessing.findSimliarWord(baseString: rmSpacingFoodName, vaildfoodNameDictionary: vaildfoodNameDictionary)
             let simliarFoodName = result.0.0
             let simliarFoodTable = result.0.1
             let simliarFoodArray = result.1
-            Task {
-                if var foodData = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
-                    foodData.recognizedText = foodName
-                    print(foodData)
-                    foodDataArray.append(foodData)
-                    DispatchQueue.main.async {
-                        self.foodCollectionView.reloadData()
-                        let processTime = CFAbsoluteTimeGetCurrent() - start
-                        print("경과시간 \(processTime)")
-                    }
+            if var food = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
+                food.recognizedText = foodName
+                foodDataArray.insert(food, at: foodInsertIndex)
+                foodInsertIndex += 1
+                DispatchQueue.main.async {
+                    self.updateFoodDataSource()
+                    let processTime = CFAbsoluteTimeGetCurrent() - start
+                    print("경과시간 \(processTime)")
                 }
             }
         }
@@ -230,17 +227,8 @@ final class ViewController: UIViewController {
     
     @objc private func startSinggleScanning() {
         if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-            scannerMode = .single
             present(dataSingleScannerViewController, animated: true)
             try? self.dataSingleScannerViewController.startScanning()
-        }
-    }
-    
-    @objc private func startMultipleScanning() {
-        if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-            scannerMode = .multiple
-            present(dataMultipleScannerViewController, animated: true)
-            try? self.dataMultipleScannerViewController.startScanning()
         }
     }
     
@@ -253,21 +241,22 @@ final class ViewController: UIViewController {
             }
         }
         Task {
-            endScan(splitedStringArray: splitedStringArray)
+            await endScan(splitedStringArray: splitedStringArray)
         }
-        switch scannerMode {
-        case .single:
-            dataSingleScannerViewController.dismiss(animated: true)
-            dataSingleScannerViewController.stopScanning()
-        case .multiple:
-            dataMultipleScannerViewController.dismiss(animated: true)
-            dataMultipleScannerViewController.stopScanning()
-        }
+        dataSingleScannerViewController.dismiss(animated: true)
+        dataSingleScannerViewController.stopScanning()
     }
     
     @objc private func deleteFoodData() {
         foodDataArray.removeAll()
-        foodCollectionView.reloadData()
+        updateFoodDataSource()
+    }
+    
+    private func updateFoodDataSource() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Food>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(self.foodDataArray)
+        self.dataSource?.apply(snapshot)
     }
 }
 
@@ -301,22 +290,30 @@ extension ViewController: DataScannerViewControllerDelegate {
     }
 }
 
-extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 400, height: 200)
+extension ViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView,
+                        didSelectItemAt indexPath: IndexPath) {
+        guard let dataSource = dataSource else { return }
+        collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+        dataSource.refresh()
+
+        return
     }
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return foodDataArray.count
+    func collectionView(_ collectionView: UICollectionView,
+                        didDeselectItemAt indexPath: IndexPath) {
+        guard let dataSource = dataSource else { return }
+        collectionView.deselectItem(at: indexPath, animated: true)
+        dataSource.refresh()
+
+        return
     }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        print("make cell")
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FoodCollectionViewCell.identifier, for: indexPath) as! FoodCollectionViewCell
-        let foodInfo = foodDataArray[indexPath.row]
-        cell.foodNameLabel.text = foodInfo.name
-        cell.recognizedTextLabel.text = "인식된 text: \(foodInfo.recognizedText)"
-        let tempString = "1회 제공량: \(String(foodInfo.serving))\(foodInfo.unit)\n열량: \(String(foodInfo.energy)) kcal\n단백질: \(foodInfo.protein)g\n지방: \(foodInfo.fat)g\n탄수화물: \(foodInfo.carbohydrate)g\n당류: \(foodInfo.sugar)g\n나트륨: \(foodInfo.natrium)mg\n콜레스테롤: \(foodInfo.cholesterol)mg\n포화지방: \(foodInfo.saturatedFat)mg\n트랜스지방: \(foodInfo.transFat)mg\n카페인: \(foodInfo.caffeine)mg"
-        cell.nutritionLabel.text = tempString
-        return cell
+}
+
+extension UICollectionViewDiffableDataSource {
+    /// Reapplies the current snapshot to the data source, animating the differences.
+    /// - Parameters:
+    ///   - completion: A closure to be called on completion of reapplying the snapshot.
+    func refresh(completion: (() -> Void)? = nil) {
+        self.apply(self.snapshot(), animatingDifferences: true, completion: completion)
     }
 }
