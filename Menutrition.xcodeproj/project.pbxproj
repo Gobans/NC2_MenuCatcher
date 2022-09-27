@@ -21,6 +21,8 @@
 		915CE6CE28B73AFB0009CBD6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 915CE6CC28B73AFB0009CBD6 /* LaunchScreen.storyboard */; };
 		91947BAC28D4AE4800772DF6 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91947BAB28D4AE4800772DF6 /* UIColor+Extension.swift */; };
 		91A5A4EF28C88DB80046425A /* FoodCategoryClassfier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 91A5A4EE28C88DB80046425A /* FoodCategoryClassfier.mlmodel */; };
+		91DAF93D28E2E1C8009A4880 /* FilterScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91DAF93C28E2E1C8009A4880 /* FilterScrollView.swift */; };
+		91DAF93F28E32898009A4880 /* CategoryPaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91DAF93E28E32898009A4880 /* CategoryPaddingLabel.swift */; };
 		91E75AE628D5F5E4003EF1DC /* NutritionPaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E75AE528D5F5E4003EF1DC /* NutritionPaddingLabel.swift */; };
 		91E75AE828D61A38003EF1DC /* OnePXLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E75AE728D61A38003EF1DC /* OnePXLine.swift */; };
 /* End PBXBuildFile section */
@@ -41,6 +43,8 @@
 		915CE6CF28B73AFB0009CBD6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		91947BAB28D4AE4800772DF6 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		91A5A4EE28C88DB80046425A /* FoodCategoryClassfier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = FoodCategoryClassfier.mlmodel; sourceTree = "<group>"; };
+		91DAF93C28E2E1C8009A4880 /* FilterScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterScrollView.swift; sourceTree = "<group>"; };
+		91DAF93E28E32898009A4880 /* CategoryPaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryPaddingLabel.swift; sourceTree = "<group>"; };
 		91E75AE528D5F5E4003EF1DC /* NutritionPaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionPaddingLabel.swift; sourceTree = "<group>"; };
 		91E75AE728D61A38003EF1DC /* OnePXLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePXLine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -82,6 +86,7 @@
 				915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */,
 				915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */,
 				915CE6C528B73AFA0009CBD6 /* ViewController.swift */,
+				91DAF93C28E2E1C8009A4880 /* FilterScrollView.swift */,
 				912AD21428C08D76009525A5 /* FoodCell.swift */,
 				912AD21028C03AAC009525A5 /* Food.swift */,
 				915CE6C728B73AFA0009CBD6 /* Main.storyboard */,
@@ -90,6 +95,7 @@
 				915CE6CF28B73AFB0009CBD6 /* Info.plist */,
 				9103E3F628BDBDCF0011F3E8 /* FoodDB.sqlite3 */,
 				91E75AE528D5F5E4003EF1DC /* NutritionPaddingLabel.swift */,
+				91DAF93E28E32898009A4880 /* CategoryPaddingLabel.swift */,
 				91E75AE728D61A38003EF1DC /* OnePXLine.swift */,
 				91947BAB28D4AE4800772DF6 /* UIColor+Extension.swift */,
 			);
@@ -174,11 +180,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91DAF93F28E32898009A4880 /* CategoryPaddingLabel.swift in Sources */,
 				912AD21128C03AAC009525A5 /* Food.swift in Sources */,
 				915CE6C628B73AFA0009CBD6 /* ViewController.swift in Sources */,
 				915CE6C228B73AFA0009CBD6 /* AppDelegate.swift in Sources */,
 				91947BAC28D4AE4800772DF6 /* UIColor+Extension.swift in Sources */,
 				9103E3F228BDACCC0011F3E8 /* Sqlite.swift in Sources */,
+				91DAF93D28E2E1C8009A4880 /* FilterScrollView.swift in Sources */,
 				91E75AE828D61A38003EF1DC /* OnePXLine.swift in Sources */,
 				915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */,
 				91E75AE628D5F5E4003EF1DC /* NutritionPaddingLabel.swift in Sources */,

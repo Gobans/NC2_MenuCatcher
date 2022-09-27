@@ -12,13 +12,7 @@ import VisionKit
 
 final class ViewController: UIViewController {
     
-    enum Section {
-        case main
-    }
-    
-    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
-    private var dataSource: UICollectionViewDiffableDataSource<Section, Food>?
-    private let padding: CGFloat = 12
+    // Used Class
     
     var categoryClassifier: NLModel {
         do {
@@ -33,6 +27,19 @@ final class ViewController: UIViewController {
     let textProcessing = TextProcessing()
     
     let sqlite = Sqlite.shared
+    
+    // UI Component
+    
+    private let filterScorllView = FilterScrollView()
+    
+    enum Section {
+        case main
+    }
+    
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Food>?
+    
+    private let padding: CGFloat = 12
     
     lazy var dataSingleScannerViewController: DataScannerViewController = {
         let viewController =  DataScannerViewController(recognizedDataTypes: [.text()],qualityLevel: .accurate, recognizesMultipleItems: false, isHighFrameRateTrackingEnabled: false, isPinchToZoomEnabled: true, isGuidanceEnabled: false, isHighlightingEnabled: true)
@@ -132,7 +139,7 @@ final class ViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: filterScorllView.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -160,11 +167,20 @@ final class ViewController: UIViewController {
 
     
     private func configureSubViews() {
+        view.addSubview(filterScorllView)
         collectionView.addSubview(singleScanButton)
         dataSingleScannerViewController.view.addSubview(catchSinggleButton)
     }
     
     private func configureConstratints() {
+        filterScorllView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            filterScorllView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            filterScorllView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            filterScorllView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -25),
+            filterScorllView.heightAnchor.constraint(equalToConstant: 57)
+        ])
+        
         catchSinggleButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             catchSinggleButton.centerXAnchor.constraint(equalTo: dataSingleScannerViewController.view.centerXAnchor),
@@ -304,7 +320,6 @@ extension ViewController: UICollectionViewDelegate {
         guard let dataSource = dataSource else { return }
         collectionView.deselectItem(at: indexPath, animated: true)
         dataSource.refresh()
-
         return
     }
 }
