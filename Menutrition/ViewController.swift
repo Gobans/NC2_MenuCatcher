@@ -177,8 +177,8 @@ final class ViewController: UIViewController {
         NSLayoutConstraint.activate([
             filterScorllView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             filterScorllView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            filterScorllView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -25),
-            filterScorllView.heightAnchor.constraint(equalToConstant: 57)
+            filterScorllView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -20),
+            filterScorllView.heightAnchor.constraint(equalToConstant: 23)
         ])
         
         catchSinggleButton.translatesAutoresizingMaskIntoConstraints = false
