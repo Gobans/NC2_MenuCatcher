@@ -16,8 +16,6 @@ class FoodCell: UICollectionViewCell {
     
     private let foodCategoryImageView: UIImageView = {
         let foodCategoryImageView = UIImageView()
-        let categoryImage = UIImage(named: "음료류")
-        foodCategoryImageView.image = categoryImage
         foodCategoryImageView.contentMode = .scaleAspectFit
         return foodCategoryImageView
     }()
@@ -282,6 +280,22 @@ class FoodCell: UICollectionViewCell {
         sugarNumberLabel.text = "\(food.sugar)g"
         caffeineNumberLabel.text = "\(food.caffeine)mg"
         subtitleLabel.text = food.category
+        switch food.category {
+        case "기타 빵류", "샌드위치류", "식빵류":
+            let categoryImage = UIImage(named: "빵류")
+            foodCategoryImageView.image = categoryImage
+        case "과일 채소음료류", "기타 음료류", "스무디류", "차류", "커피류", "탄산 음료류":
+            let categoryImage = UIImage(named: "음료류")
+            foodCategoryImageView.image = categoryImage
+        case "기타 음식류", "튀김류", "피자류":
+            let categoryImage = UIImage(named: "음식류")
+            foodCategoryImageView.image = categoryImage
+        case "아이스크림류", "페이스트리류", "케이크류":
+            let categoryImage = UIImage(named: "디저트류")
+            foodCategoryImageView.image = categoryImage
+        default:
+            print("none")
+        }
     }
     private func updateAppearance() {
         closedConstraint?.isActive = !isSelected
@@ -300,18 +314,24 @@ extension FoodCell: UICollectionViewCellHighlight {
         switch nutrition {
         case .energy:
             energyNumberLabel.backgroundColor = isActive ? .gray : .white
+            energyNumberLabel.textColor = isActive ? .white : .black
         case .protein:
             proteinNumberLabel.backgroundColor = isActive ? .gray : .white
+            proteinNumberLabel.textColor = isActive ? .white : .black
         case .fat:
             fatNumberLabel.backgroundColor = isActive ? .gray : .white
+            fatNumberLabel.textColor = isActive ? .white : .black
         case .carbohydrate:
             carbohydrateNumberLabel.backgroundColor = isActive ? .gray : .white
+            carbohydrateNumberLabel.textColor = isActive ? .white : .black
         case .sugar:
             sugarNumberLabel.backgroundColor = isActive ? .gray : .white
+            sugarNumberLabel.textColor = isActive ? .white : .black
         case .natrium:
             print("natrium")
         case .caffeine:
             caffeineNumberLabel.backgroundColor = isActive ? .gray : .white
+            caffeineNumberLabel.textColor = isActive ? .white : .black
         }
     }
 }
