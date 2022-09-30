@@ -294,4 +294,28 @@ class FoodCell: UICollectionViewCell {
         }
     }
 }
- 
+
+extension FoodCell: UICollectionViewCellHighlight {
+    func highlightNutritionLabel(nutrition: NutritionName, isActive: Bool) {
+        switch nutrition {
+        case .energy:
+            energyNumberLabel.backgroundColor = isActive ? .gray : .white
+        case .protein:
+            proteinNumberLabel.backgroundColor = isActive ? .gray : .white
+        case .fat:
+            fatNumberLabel.backgroundColor = isActive ? .gray : .white
+        case .carbohydrate:
+            carbohydrateNumberLabel.backgroundColor = isActive ? .gray : .white
+        case .sugar:
+            sugarNumberLabel.backgroundColor = isActive ? .gray : .white
+        case .natrium:
+            print("natrium")
+        case .caffeine:
+            caffeineNumberLabel.backgroundColor = isActive ? .gray : .white
+        }
+    }
+}
+
+protocol UICollectionViewCellHighlight {
+    func highlightNutritionLabel(nutrition: NutritionName, isActive: Bool)
+}

@@ -8,6 +8,7 @@
 import UIKit
 
 class FilterScrollView: UIScrollView {
+    var highlightDelegate: EnableHighlightCells?
     let insetConfiguration: UIButton.Configuration = {
         var insetConfiguration = UIButton.Configuration.tinted()
         return insetConfiguration
@@ -34,11 +35,47 @@ class FilterScrollView: UIScrollView {
     @objc private func filterNutrition(_ sender: UIButton) {
         sender.isSelected.toggle()
         sender.tintColor = sender.isSelected ? .black : .white
+        let senderTitle = sender.currentTitle
+        let isActive = sender.isSelected
+        switch senderTitle {
+        case "열량":
+            highlightDelegate?.highlightCells(nutrition: NutritionName.energy, isActive: isActive)
+            print("열량 버튼 \(isActive)")
+        case "탄수화물":
+            highlightDelegate?.highlightCells(nutrition: NutritionName.carbohydrate, isActive: isActive)
+        case "단백질":
+            highlightDelegate?.highlightCells(nutrition: NutritionName.protein, isActive: isActive)
+        case "지방":
+            highlightDelegate?.highlightCells(nutrition: NutritionName.fat, isActive: isActive)
+        case "당류":
+            highlightDelegate?.highlightCells(nutrition: NutritionName.sugar, isActive: isActive)
+        case "카페인":
+            highlightDelegate?.highlightCells(nutrition: NutritionName.caffeine, isActive: isActive)
+        default:
+            print("error ")
+        }
         guard let currentHilighted = currentHilightedButton else {
             currentHilightedButton = sender
             return
         }
         if currentHilighted != sender {
+            let currentHilightedTitle = currentHilighted.currentTitle
+            switch currentHilightedTitle {
+            case "열량":
+                highlightDelegate?.highlightCells(nutrition: NutritionName.energy, isActive: false)
+            case "탄수화물":
+                highlightDelegate?.highlightCells(nutrition: NutritionName.carbohydrate, isActive: false)
+            case "단백질":
+                highlightDelegate?.highlightCells(nutrition: NutritionName.protein, isActive: false)
+            case "지방":
+                highlightDelegate?.highlightCells(nutrition: NutritionName.fat, isActive: false)
+            case "당류":
+                highlightDelegate?.highlightCells(nutrition: NutritionName.sugar, isActive: false)
+            case "카페인":
+                highlightDelegate?.highlightCells(nutrition: NutritionName.caffeine, isActive: false)
+            default:
+                print("error ")
+            }
             currentHilighted.isSelected = false
             currentHilighted.tintColor = .white
             currentHilightedButton = sender

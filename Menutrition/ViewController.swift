@@ -36,7 +36,7 @@ final class ViewController: UIViewController {
         case main
     }
     
-    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+    private lazy var collectionView = FoodCollectionView(frame: .zero, collectionViewLayout: createLayout())
     private var dataSource: UICollectionViewDiffableDataSource<Section, Food>?
     
     private let padding: CGFloat = 12
@@ -111,6 +111,7 @@ final class ViewController: UIViewController {
         setUpCollectionView()
         setUpDataSource()
         collectionView.delegate = self
+        filterScorllView.highlightDelegate = collectionView
     }
     
     private func createLayout() -> UICollectionViewLayout {
@@ -312,7 +313,6 @@ extension ViewController: UICollectionViewDelegate {
         guard let dataSource = dataSource else { return }
         collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
         dataSource.refresh()
-
         return
     }
     func collectionView(_ collectionView: UICollectionView,
