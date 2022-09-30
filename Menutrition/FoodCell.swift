@@ -19,6 +19,19 @@ class FoodCell: UICollectionViewCell {
         foodCategoryImageView.contentMode = .scaleAspectFit
         return foodCategoryImageView
     }()
+    
+    private lazy var recognizedTextButton: UIButton = {
+        let recognizedTextButton = UIButton()
+        let questionMarkImage = UIImage(systemName: "questionmark.circle.fill")
+        recognizedTextButton.setImage(questionMarkImage, for: .normal)
+        recognizedTextButton.tintColor = UIColor(hexString: "#D9D9D9")
+        recognizedTextButton.contentMode = .scaleAspectFit
+        recognizedTextButton.isHidden = true
+//        regognizedTextButton.addTarget(self, action: #selector(showRecognizedText), for: .touchUpInside)
+        return recognizedTextButton
+    }()
+    
+    private let titleContentUIView = UIView()
     private let nameLabel: UILabel = {
         let nameLabel = UILabel()
         nameLabel.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 17)
@@ -131,9 +144,10 @@ class FoodCell: UICollectionViewCell {
         return labelStack
     }()
     private lazy var titleContentStackView: UIStackView = {
-        let UIStackView = UIStackView(arrangedSubviews: [foodCategoryImageView, titleLabelStackView])
+        let UIStackView = UIStackView(arrangedSubviews: [foodCategoryImageView, titleLabelStackView, titleContentUIView])
         UIStackView.axis = .horizontal
         UIStackView.distribution = .fill
+        UIStackView.alignment = .leading
         UIStackView.spacing = 14
         return UIStackView
     }()
@@ -169,7 +183,6 @@ class FoodCell: UICollectionViewCell {
         configureUI()
         setUpConstraints()
         updateAppearance()
-        
     }
     
     private func configureUI() {
@@ -264,6 +277,15 @@ class FoodCell: UICollectionViewCell {
         openConstraint =
         nutritionRootStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         openConstraint?.priority = .defaultLow
+        
+        titleContentUIView.addSubview(recognizedTextButton)
+        recognizedTextButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            recognizedTextButton.heightAnchor.constraint(equalTo: nameLabel.heightAnchor),
+            recognizedTextButton.widthAnchor.constraint(equalTo: disclosureIndicator.widthAnchor),
+            recognizedTextButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
+            recognizedTextButton.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 13)
+        ])
     }
     
     private func updateContent() {
@@ -296,6 +318,9 @@ class FoodCell: UICollectionViewCell {
         default:
             print("none")
         }
+        if food.name != food.recognizedText {
+            recognizedTextButton.isHidden = false
+        }
     }
     private func updateAppearance() {
         closedConstraint?.isActive = !isSelected
@@ -306,6 +331,10 @@ class FoodCell: UICollectionViewCell {
             let up = CGAffineTransform(rotationAngle: .pi * 2)
             self.disclosureIndicator.transform = self.isSelected ? up : down
         }
+    }
+    
+    @objc private func showRecognizedText() {
+        
     }
 }
 
