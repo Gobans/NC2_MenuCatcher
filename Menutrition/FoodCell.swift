@@ -6,23 +6,19 @@
 //
 
 import UIKit
-
-protocol SwipeableCollectionViewCellDelegate: UIViewController {
-    func foodCellSwiped(inCell cell: FoodCell)
-}
+import SwipeCellKit
 
 protocol UICollectionViewCellHighlight {
     func highlightNutritionLabel(nutrition: NutritionName, isActive: Bool)
 }
 
 
-class FoodCell: UICollectionViewCell {
+class FoodCell: SwipeCollectionViewCell {
     static let identifier = "FoodCollectionViewCell"
     
-    weak var delegate: SwipeableCollectionViewCellDelegate?
     var food: Food? { didSet { updateContent() } }
     override var isSelected: Bool { didSet { updateAppearance() } }
-    
+    var isSwipeDeleting: Bool = false
     
     // Views
     private let foodCategoryImageView: UIImageView = {
@@ -216,9 +212,6 @@ class FoodCell: UICollectionViewCell {
             label.font = UIFont(name: "Roboto-SemiBold", size: 13)
             label.textAlignment = .center
         }
-        let trailingSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeToDeleteCell) )
-        trailingSwipe.direction = .left
-        contentView.addGestureRecognizer(trailingSwipe)
     }
     
     private func setUpConstraints() {
@@ -340,21 +333,16 @@ class FoodCell: UICollectionViewCell {
         }
     }
     private func updateAppearance() {
-        closedConstraint?.isActive = !isSelected
-        openConstraint?.isActive = isSelected
-        seperatorView.backgroundColor = isSelected ? UIColor(hexString: "#EFEFEF") : .clear
-        UIView.animate(withDuration: 0.3) {
-            let down = CGAffineTransform(rotationAngle: .pi)
-            let up = CGAffineTransform(rotationAngle: .pi * 2)
-            self.disclosureIndicator.transform = self.isSelected ? up : down
+        if !isSwipeDeleting {
+            closedConstraint?.isActive = !isSelected
+            openConstraint?.isActive = isSelected
+            seperatorView.backgroundColor = isSelected ? UIColor(hexString: "#EFEFEF") : .clear
+            UIView.animate(withDuration: 0.3) {
+                let down = CGAffineTransform(rotationAngle: .pi)
+                let up = CGAffineTransform(rotationAngle: .pi * 2)
+                self.disclosureIndicator.transform = self.isSelected ? up : down
+            }
         }
-    }
-    
-    @objc private func showRecognizedText() {
-        
-    }
-    @objc private func swipeToDeleteCell() {
-        delegate?.foodCellSwiped(inCell: self)
     }
 }
 

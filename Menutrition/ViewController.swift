@@ -9,6 +9,7 @@ import UIKit
 import NaturalLanguage
 import CoreML
 import VisionKit
+import SwipeCellKit
 
 final class ViewController: UIViewController {
     
@@ -92,6 +93,8 @@ final class ViewController: UIViewController {
     
     var allFoodNameDictionary: [String: [String]] = [:]
     
+    var swipeCellIndexPath: IndexPath?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
@@ -119,11 +122,11 @@ final class ViewController: UIViewController {
     private func createLayout() -> UICollectionViewLayout {
         // The item and group will share this size to allow for automatic sizing of the cell's height
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                             heightDimension: .estimated(50))
+                                              heightDimension: .estimated(50))
         
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize,
-                                                         subitems: [item])
+                                                       subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = padding
@@ -155,9 +158,10 @@ final class ViewController: UIViewController {
                 withReuseIdentifier: String(describing: FoodCell.self),
                 for: indexPath) as? FoodCell else {
                     fatalError("Could not cast cell as \(FoodCell.self)")
-            }
+                }
             cell.food = food
             cell.delegate = self
+            cell.isSwipeDeleting = false
             return cell
         }
         collectionView.dataSource = dataSource
@@ -167,7 +171,7 @@ final class ViewController: UIViewController {
         snapshot.appendItems(foodDataArray)
         dataSource?.apply(snapshot)
     }
-
+    
     
     private func configureSubViews() {
         view.addSubview(filterScorllView)
@@ -335,14 +339,41 @@ extension UICollectionViewDiffableDataSource {
     }
 }
 
-extension ViewController: SwipeableCollectionViewCellDelegate {
-    func foodCellSwiped(inCell cell: FoodCell) {
-        guard let indexPath = collectionView.indexPath(for: cell) else { return }
-          foodDataArray.remove(at: indexPath.item)
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Food>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(self.foodDataArray)
-        dataSource?.apply(snapshot, animatingDifferences: true)
-        print("delete")
+extension ViewController: SwipeCollectionViewCellDelegate {
+    func collectionView(_ collectionView: UICollectionView, editActionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        guard orientation == .right else { return nil }
+        let cell = collectionView.cellForItem(at: indexPath) as? FoodCell
+        if cell?.isSelected == true {
+            cell?.isSwipeDeleting = true
+            self.swipeCellIndexPath = indexPath
+        }
+        let deleteAction = SwipeAction(style: .destructive , title: "Delete") { action, indexPath in
+            // handle action by updating model with deletion
+            self.foodDataArray.remove(at: indexPath.item)
+            var snapshot = NSDiffableDataSourceSnapshot<Section, Food>()
+            snapshot.appendSections([.main])
+            snapshot.appendItems(self.foodDataArray)
+            self.dataSource?.apply(snapshot, animatingDifferences: true)
+        }
+        // customize the action appearance
+        deleteAction.image = UIImage(named: "delete")
+        deleteAction.transitionDelegate = self
+        return [deleteAction]
+    }
+    func collectionView(_ collectionView: UICollectionView, editActionsOptionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
+        var options = SwipeOptions()
+        options.expansionStyle = .destructive(automaticallyDelete: false)
+        options.transitionStyle = .border
+        return options
+    }
+}
+
+extension ViewController: SwipeActionTransitioning {
+    func didTransition(with context: SwipeActionTransitioningContext) {
+        if context.newPercentVisible == 0 {
+            guard let swipeCellIndexPath else {return}
+            let cell = collectionView.cellForItem(at: swipeCellIndexPath) as? FoodCell
+            cell?.isSwipeDeleting = false
+        }
     }
 }

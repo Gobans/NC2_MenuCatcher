@@ -25,6 +25,7 @@
 		91A5A4EF28C88DB80046425A /* FoodCategoryClassfier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 91A5A4EE28C88DB80046425A /* FoodCategoryClassfier.mlmodel */; };
 		91DAF93D28E2E1C8009A4880 /* FilterScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91DAF93C28E2E1C8009A4880 /* FilterScrollView.swift */; };
 		91DAF93F28E32898009A4880 /* CategoryPaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91DAF93E28E32898009A4880 /* CategoryPaddingLabel.swift */; };
+		91DDE30528E8224F0057ED00 /* SwipeCellKit in Frameworks */ = {isa = PBXBuildFile; productRef = 91DDE30428E8224F0057ED00 /* SwipeCellKit */; };
 		91E75AE628D5F5E4003EF1DC /* NutritionPaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E75AE528D5F5E4003EF1DC /* NutritionPaddingLabel.swift */; };
 		91E75AE828D61A38003EF1DC /* OnePXLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E75AE728D61A38003EF1DC /* OnePXLine.swift */; };
 /* End PBXBuildFile section */
@@ -58,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91DDE30528E8224F0057ED00 /* SwipeCellKit in Frameworks */,
 				9103E3F528BDB0AB0011F3E8 /* SQLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -126,6 +128,7 @@
 			name = Menutrition;
 			packageProductDependencies = (
 				9103E3F428BDB0AB0011F3E8 /* SQLite */,
+				91DDE30428E8224F0057ED00 /* SwipeCellKit */,
 			);
 			productName = Menutrition;
 			productReference = 915CE6BE28B73AFA0009CBD6 /* Menutrition.app */;
@@ -157,6 +160,7 @@
 			mainGroup = 915CE6B528B73AFA0009CBD6;
 			packageReferences = (
 				9103E3F328BDB0AB0011F3E8 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+				91DDE30328E8224F0057ED00 /* XCRemoteSwiftPackageReference "SwipeCellKit" */,
 			);
 			productRefGroup = 915CE6BF28B73AFA0009CBD6 /* Products */;
 			projectDirPath = "";
@@ -430,6 +434,14 @@
 				minimumVersion = 0.9.2;
 			};
 		};
+		91DDE30328E8224F0057ED00 /* XCRemoteSwiftPackageReference "SwipeCellKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwipeCellKit/SwipeCellKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -437,6 +449,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9103E3F328BDB0AB0011F3E8 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
 			productName = SQLite;
+		};
+		91DDE30428E8224F0057ED00 /* SwipeCellKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 91DDE30328E8224F0057ED00 /* XCRemoteSwiftPackageReference "SwipeCellKit" */;
+			productName = SwipeCellKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
