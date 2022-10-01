@@ -110,6 +110,8 @@ final class ViewController: UIViewController {
         configureConstratints()
         setUpCollectionView()
         setUpDataSource()
+        
+        // Setup Delegate
         collectionView.delegate = self
         filterScorllView.highlightDelegate = collectionView
     }
@@ -126,7 +128,6 @@ final class ViewController: UIViewController {
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = padding
         section.contentInsets = .init(top: 40, leading: 20, bottom: 120, trailing: 20)
-        
         return UICollectionViewCompositionalLayout(section: section)
     }
     
@@ -156,6 +157,7 @@ final class ViewController: UIViewController {
                     fatalError("Could not cast cell as \(FoodCell.self)")
             }
             cell.food = food
+            cell.delegate = self
             return cell
         }
         collectionView.dataSource = dataSource
@@ -330,5 +332,17 @@ extension UICollectionViewDiffableDataSource {
     ///   - completion: A closure to be called on completion of reapplying the snapshot.
     func refresh(completion: (() -> Void)? = nil) {
         self.apply(self.snapshot(), animatingDifferences: true, completion: completion)
+    }
+}
+
+extension ViewController: SwipeableCollectionViewCellDelegate {
+    func foodCellSwiped(inCell cell: FoodCell) {
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+          foodDataArray.remove(at: indexPath.item)
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Food>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(self.foodDataArray)
+        dataSource?.apply(snapshot, animatingDifferences: true)
+        print("delete")
     }
 }
