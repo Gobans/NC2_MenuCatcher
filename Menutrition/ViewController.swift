@@ -161,6 +161,7 @@ final class ViewController: UIViewController {
                 }
             cell.food = food
             cell.delegate = self
+            cell.tooltipDelegate = self
             cell.isSwipeDeleting = false
             return cell
         }
@@ -376,6 +377,21 @@ extension ViewController: SwipeActionTransitioning {
             guard let swipeCellIndexPath else {return}
             let cell = collectionView.cellForItem(at: swipeCellIndexPath) as? FoodCell
             cell?.isSwipeDeleting = false
+        }
+    }
+}
+
+extension ViewController: EnableDisplayToolTipView {
+    func displayToolTip(centerX: NSLayoutXAxisAnchor, centerY: NSLayoutYAxisAnchor, recognizedText: String) {
+        let toolTipEmptyView = UIView()
+        self.collectionView.addSubview(toolTipEmptyView)
+        toolTipEmptyView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            toolTipEmptyView.centerXAnchor.constraint(equalTo: centerX),
+            toolTipEmptyView.centerYAnchor.constraint(equalTo: centerY)
+        ])
+        toolTipEmptyView.displayTooltip(recognizedText) {
+            toolTipEmptyView.removeFromSuperview()
         }
     }
 }

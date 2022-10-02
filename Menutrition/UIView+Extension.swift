@@ -19,7 +19,8 @@ extension UIView {
         let tooltip = UIView()
         
         let tooltipLabel = UILabel()
-        tooltipLabel.text = "    \(message)    "
+        tooltipLabel.text = "\(message)"
+        tooltipLabel.textAlignment = .center
         tooltipLabel.font = UIFont.systemFont(ofSize: 12)
         tooltipLabel.contentMode = .center
         tooltipLabel.textColor = .white
@@ -62,7 +63,7 @@ extension UIView {
         UIView.animate(withDuration: 0.2, animations: {
             tooltip.alpha = tooltipAlpha
         }, completion: { _ in
-            UIView.animate(withDuration: 0.5, delay: 0.5, animations: {
+            UIView.animate(withDuration: 0.5, delay: 3, animations: {
                 tooltip.alpha = 0
             }, completion: { _ in
                 tooltip.removeFromSuperview()

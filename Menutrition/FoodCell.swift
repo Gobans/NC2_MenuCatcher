@@ -12,10 +12,15 @@ protocol UICollectionViewCellHighlight {
     func highlightNutritionLabel(nutrition: NutritionName, isActive: Bool)
 }
 
+protocol EnableDisplayToolTipView {
+    func displayToolTip(centerX: NSLayoutXAxisAnchor, centerY: NSLayoutYAxisAnchor, recognizedText: String)
+}
+
 
 class FoodCell: SwipeCollectionViewCell {
     static let identifier = "FoodCollectionViewCell"
     
+    var tooltipDelegate: EnableDisplayToolTipView?
     var food: Food? { didSet { updateContent() } }
     override var isSelected: Bool { didSet { updateAppearance() } }
     var isSwipeDeleting: Bool = false
@@ -350,7 +355,8 @@ class FoodCell: SwipeCollectionViewCell {
         }
     }
     @objc private func showRecognizedText() {
-        recognizedTextButton.displayTooltip("clicked!")
+        guard let recognizedText = food?.recognizedText else {return}
+        tooltipDelegate?.displayToolTip(centerX: recognizedTextButton.centerXAnchor, centerY: recognizedTextButton.centerYAnchor, recognizedText: recognizedText)
     }
 }
 
