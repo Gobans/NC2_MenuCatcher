@@ -34,7 +34,7 @@ class FoodCell: SwipeCollectionViewCell {
         recognizedTextButton.tintColor = UIColor(hexString: "#D9D9D9")
         recognizedTextButton.contentMode = .scaleAspectFit
         recognizedTextButton.isHidden = true
-//        regognizedTextButton.addTarget(self, action: #selector(showRecognizedText), for: .touchUpInside)
+        recognizedTextButton.addTarget(self, action: #selector(showRecognizedText), for: .touchUpInside)
         return recognizedTextButton
     }()
     
@@ -286,7 +286,12 @@ class FoodCell: SwipeCollectionViewCell {
         nutritionRootStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         openConstraint?.priority = .defaultLow
         
-        titleContentUIView.addSubview(recognizedTextButton)
+//        let scenes = UIApplication.shared.connectedScenes
+//        let windowScene = scenes.first as? UIWindowScene
+//        let window = windowScene?.windows.first
+//        window?.addSubview(recognizedTextButton)
+//        contentView.addSubview(recognizedTextButton)
+        contentView.addSubview(recognizedTextButton)
         recognizedTextButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             recognizedTextButton.heightAnchor.constraint(equalTo: nameLabel.heightAnchor),
@@ -343,6 +348,9 @@ class FoodCell: SwipeCollectionViewCell {
                 self.disclosureIndicator.transform = self.isSelected ? up : down
             }
         }
+    }
+    @objc private func showRecognizedText() {
+        recognizedTextButton.displayTooltip("clicked!")
     }
 }
 
