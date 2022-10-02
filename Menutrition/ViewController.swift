@@ -347,7 +347,7 @@ extension ViewController: SwipeCollectionViewCellDelegate {
             cell?.isSwipeDeleting = true
             self.swipeCellIndexPath = indexPath
         }
-        let deleteAction = SwipeAction(style: .destructive , title: "Delete") { action, indexPath in
+        let deleteAction = SwipeAction(style: .destructive , title: nil) { action, indexPath in
             // handle action by updating model with deletion
             self.foodDataArray.remove(at: indexPath.item)
             var snapshot = NSDiffableDataSourceSnapshot<Section, Food>()
@@ -356,8 +356,10 @@ extension ViewController: SwipeCollectionViewCellDelegate {
             self.dataSource?.apply(snapshot, animatingDifferences: true)
         }
         // customize the action appearance
-        deleteAction.image = UIImage(named: "delete")
+        let deleteImageWithColor = UIImage(systemName: "trash.fill")?.withTintColor(UIColor(hexString: "#F3645B"), renderingMode: .alwaysOriginal)
+        deleteAction.image = deleteImageWithColor
         deleteAction.transitionDelegate = self
+        deleteAction.backgroundColor = UIColor(hexString: "#FFE6E3")
         return [deleteAction]
     }
     func collectionView(_ collectionView: UICollectionView, editActionsOptionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
