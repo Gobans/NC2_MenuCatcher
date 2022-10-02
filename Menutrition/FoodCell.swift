@@ -85,7 +85,7 @@ class FoodCell: SwipeCollectionViewCell {
     private let natriumNumberLabel = UILabel()
     private let disclosureIndicator: UIImageView = {
         let disclosureIndicator = UIImageView()
-        disclosureIndicator.image = UIImage(systemName: "triangle.fill")
+        disclosureIndicator.image = UIImage(named: "Indicator")
         disclosureIndicator.contentMode = .scaleAspectFit
         disclosureIndicator.preferredSymbolConfiguration = .init(textStyle: .body, scale: .small)
         disclosureIndicator.tintColor = .black
@@ -249,6 +249,8 @@ class FoodCell: SwipeCollectionViewCell {
         NSLayoutConstraint.activate([
             disclosureIndicator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -31),
             disclosureIndicator.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
+            disclosureIndicator.heightAnchor.constraint(equalToConstant: 10),
+            disclosureIndicator.widthAnchor.constraint(equalToConstant: 18),
         ])
         
         contentView.addSubview(seperatorView)
@@ -348,8 +350,8 @@ class FoodCell: SwipeCollectionViewCell {
             openConstraint?.isActive = isSelected
             seperatorView.backgroundColor = isSelected ? UIColor(hexString: "#EFEFEF") : .clear
             UIView.animate(withDuration: 0.3) {
-                let down = CGAffineTransform(rotationAngle: .pi)
-                let up = CGAffineTransform(rotationAngle: .pi * 2)
+                let up = CGAffineTransform(rotationAngle: .pi)
+                let down = CGAffineTransform(rotationAngle: .pi * 2)
                 self.disclosureIndicator.transform = self.isSelected ? up : down
             }
         }
