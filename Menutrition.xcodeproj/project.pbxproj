@@ -16,6 +16,7 @@
 		913BC61B28E9586A006FACFF /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913BC61A28E9586A006FACFF /* UIView+Extension.swift */; };
 		913BC61D28E95889006FACFF /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913BC61C28E95889006FACFF /* String+Extension.swift */; };
 		913BC61F28E95C40006FACFF /* ToolTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913BC61E28E95C40006FACFF /* ToolTipView.swift */; };
+		913BC62128E9BA16006FACFF /* Double+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913BC62028E9BA16006FACFF /* Double+Extension.swift */; };
 		915CE6C228B73AFA0009CBD6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */; };
 		915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */; };
 		915CE6C628B73AFA0009CBD6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C528B73AFA0009CBD6 /* ViewController.swift */; };
@@ -42,6 +43,7 @@
 		913BC61A28E9586A006FACFF /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		913BC61C28E95889006FACFF /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		913BC61E28E95C40006FACFF /* ToolTipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolTipView.swift; sourceTree = "<group>"; };
+		913BC62028E9BA16006FACFF /* Double+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extension.swift"; sourceTree = "<group>"; };
 		915CE6BE28B73AFA0009CBD6 /* Menutrition.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Menutrition.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 				91947BAB28D4AE4800772DF6 /* UIColor+Extension.swift */,
 				913BC61A28E9586A006FACFF /* UIView+Extension.swift */,
 				913BC61C28E95889006FACFF /* String+Extension.swift */,
+				913BC62028E9BA16006FACFF /* Double+Extension.swift */,
 			);
 			path = Menutrition;
 			sourceTree = "<group>";
@@ -210,6 +213,7 @@
 				9184F15328E6D88900C5A501 /* Enum+Nutrition.swift in Sources */,
 				913BC61D28E95889006FACFF /* String+Extension.swift in Sources */,
 				91DAF93D28E2E1C8009A4880 /* FilterScrollView.swift in Sources */,
+				913BC62128E9BA16006FACFF /* Double+Extension.swift in Sources */,
 				91E75AE828D61A38003EF1DC /* OnePXLine.swift in Sources */,
 				915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */,
 				91E75AE628D5F5E4003EF1DC /* NutritionPaddingLabel.swift in Sources */,

@@ -27,8 +27,9 @@ class FilterScrollView: UIScrollView {
     private lazy var fatButton = UIButton(configuration: insetConfiguration)
     private lazy var sugarButton = UIButton(configuration: insetConfiguration)
     private lazy var caffeineButton = UIButton(configuration: insetConfiguration)
-    private let nutritionLabelText: [String] = ["열량", "탄수화물", "단백질", "지방", "당류", "카페인"]
-    private lazy var nutritionButtons: [UIButton] = [energyButton, carbohydrateButton, proteinButton, fatButton, sugarButton, caffeineButton]
+    private lazy var natriumButton = UIButton(configuration: insetConfiguration)
+    private let nutritionLabelText: [String] = ["열량", "탄수화물", "단백질", "지방", "당류","카페인", "나트륨",]
+    private lazy var nutritionButtons: [UIButton] = [energyButton, carbohydrateButton, proteinButton, fatButton, sugarButton,caffeineButton, natriumButton]
     
     private lazy var currentHilightedButton: UIButton? = nil
     
@@ -49,6 +50,8 @@ class FilterScrollView: UIScrollView {
             highlightDelegate?.highlightCells(nutrition: NutritionName.fat, isActive: isActive)
         case "당류":
             highlightDelegate?.highlightCells(nutrition: NutritionName.sugar, isActive: isActive)
+        case "나트륨":
+            highlightDelegate?.highlightCells(nutrition: NutritionName.natrium, isActive: isActive)
         case "카페인":
             highlightDelegate?.highlightCells(nutrition: NutritionName.caffeine, isActive: isActive)
         default:
@@ -69,6 +72,8 @@ class FilterScrollView: UIScrollView {
                 highlightDelegate?.highlightCells(nutrition: NutritionName.protein, isActive: false)
             case "지방":
                 highlightDelegate?.highlightCells(nutrition: NutritionName.fat, isActive: false)
+            case "나트륨":
+                highlightDelegate?.highlightCells(nutrition: NutritionName.natrium, isActive: false)
             case "당류":
                 highlightDelegate?.highlightCells(nutrition: NutritionName.sugar, isActive: false)
             case "카페인":
