@@ -345,9 +345,7 @@ extension ViewController: SwipeCollectionViewCellDelegate {
         guard orientation == .right else { return nil }
         self.swipeCellIndexPath = indexPath
         let cell = collectionView.cellForItem(at: indexPath) as? FoodCell
-        if cell?.isSelected == true {
-            cell?.isSwipeDeleting = true
-        }
+        cell?.isSwipeDeleting = true
         let deleteAction = SwipeAction(style: .destructive , title: nil) { action, indexPath in
             // handle action by updating model with deletion
             self.foodDataArray.remove(at: indexPath.item)
@@ -372,7 +370,8 @@ extension ViewController: SwipeCollectionViewCellDelegate {
 }
 
 var swipeOffsetForRecognizedText: [String:CGFloat] = [:]
-var TooltipViewForRecognizedText: [String:UIView] = [:]
+var TooltipViewForRecognizedText: [String:ToolTipView] = [:]
+var isAnimating = false
 
 extension ViewController: SwipeActionTransitioning {
     func didTransition(with context: SwipeActionTransitioningContext) {
@@ -381,33 +380,58 @@ extension ViewController: SwipeActionTransitioning {
         if context.newPercentVisible == 0 {
             cell.isSwipeDeleting = false
         }
-        swipeOffsetForRecognizedText[cell.food!.recognizedText] = cell.swipeOffset
-        guard let toolTipView = TooltipViewForRecognizedText[cell.food!.recognizedText] else {return}
-        print(TooltipViewForRecognizedText)
-        print(cell.swipeOffset)
-        DispatchQueue.main.async {
-            UIView.animate(withDuration: 0.2) {
-                toolTipView.frame.origin.x -= cell.swipeOffset
-            }
+        let recognizedText = cell.food!.recognizedText
+        swipeOffsetForRecognizedText[recognizedText] = cell.swipeOffset
+        guard let toolTipView = TooltipViewForRecognizedText[recognizedText] else {return}
+        if isAnimating {
+            return
         }
+        isAnimating = true
+        toolTipView.layer.removeAllAnimations()
+        toolTipView.alpha = toolTipView.alpha
+        UIView.animate(withDuration: 0.01, animations: {
+            toolTipView.alpha = toolTipView.tooltipAlpha
+        }, completion: { _ in
+        UIView.animate(withDuration: 0.5 ,animations: {
+                toolTipView.alpha = 0
+            }, completion: { _ in
+                TooltipViewForRecognizedText.removeValue(forKey: recognizedText)
+                swipeOffsetForRecognizedText.removeValue(forKey: recognizedText)
+                isAnimating = false
+            })
+        })
     }
 }
 
 extension ViewController: EnableDisplayToolTipView {
-    func displayToolTip(centerX: NSLayoutXAxisAnchor, centerY: NSLayoutYAxisAnchor, recognizedText: String) {
-        let toolTipEmptyView = UIView()
-        print("initialToolTipEmptyView")
-        print(toolTipEmptyView)
-        self.collectionView.addSubview(toolTipEmptyView)
-        toolTipEmptyView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            toolTipEmptyView.centerXAnchor.constraint(equalTo: centerX),
-            toolTipEmptyView.centerYAnchor.constraint(equalTo: centerY)
-        ])
-        TooltipViewForRecognizedText[recognizedText] = toolTipEmptyView
-        toolTipEmptyView.displayTooltip(recognizedText) {
-            toolTipEmptyView.removeFromSuperview()
-            TooltipViewForRecognizedText.removeValue(forKey: recognizedText)
+    func displayToolTip(centerX: NSLayoutXAxisAnchor, topAnchor: NSLayoutYAxisAnchor, recognizedText: String) {
+        if TooltipViewForRecognizedText.contains(where: {$0.key == recognizedText}){
+           return
         }
+        let toolTipView = ToolTipView(frame: .zero, message: recognizedText)
+        self.collectionView.addSubview(toolTipView)
+        toolTipView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            toolTipView.bottomAnchor.constraint(equalTo: topAnchor, constant: -toolTipView.tooltipBottomPadding + toolTipView.pointerHeight),
+            toolTipView.centerXAnchor.constraint(equalTo: centerX),
+            toolTipView.heightAnchor.constraint(equalToConstant: toolTipView.labelHeight + toolTipView.pointerHeight),
+            toolTipView.widthAnchor.constraint(equalToConstant: toolTipView.labelWidth)
+        ])
+        toolTipView.alpha = 0
+        TooltipViewForRecognizedText[recognizedText] = toolTipView
+
+        UIView.animate(withDuration: 0.2, animations: {
+            toolTipView.alpha = toolTipView.tooltipAlpha
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.5, delay: 3, animations: {
+                toolTipView.alpha = 0
+            }, completion: { isSucceced in
+                if isSucceced {
+                    toolTipView.removeFromSuperview()
+                    TooltipViewForRecognizedText.removeValue(forKey: recognizedText)
+                    swipeOffsetForRecognizedText.removeValue(forKey: recognizedText)
+                }
+            })
+        })
     }
 }

@@ -13,7 +13,7 @@ protocol UICollectionViewCellHighlight {
 }
 
 protocol EnableDisplayToolTipView {
-    func displayToolTip(centerX: NSLayoutXAxisAnchor, centerY: NSLayoutYAxisAnchor, recognizedText: String)
+    func displayToolTip(centerX: NSLayoutXAxisAnchor, topAnchor: NSLayoutYAxisAnchor, recognizedText: String)
 }
 
 
@@ -291,11 +291,6 @@ class FoodCell: SwipeCollectionViewCell {
         nutritionRootStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         openConstraint?.priority = .defaultLow
         
-//        let scenes = UIApplication.shared.connectedScenes
-//        let windowScene = scenes.first as? UIWindowScene
-//        let window = windowScene?.windows.first
-//        window?.addSubview(recognizedTextButton)
-//        contentView.addSubview(recognizedTextButton)
         contentView.addSubview(recognizedTextButton)
         recognizedTextButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -356,9 +351,8 @@ class FoodCell: SwipeCollectionViewCell {
     }
     @objc private func showRecognizedText() {
         guard let recognizedText = food?.recognizedText else {return}
-        print(recognizedTextButton.centerXAnchor)
-        print(recognizedTextButton.centerYAnchor)
-        tooltipDelegate?.displayToolTip(centerX: recognizedTextButton.centerXAnchor, centerY: recognizedTextButton.centerYAnchor, recognizedText: recognizedText)
+        if isSwipeDeleting { return }
+        tooltipDelegate?.displayToolTip(centerX: recognizedTextButton.centerXAnchor, topAnchor: recognizedTextButton.topAnchor, recognizedText: recognizedText)
     }
 }
 

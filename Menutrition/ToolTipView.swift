@@ -19,9 +19,10 @@ class ToolTipView: UIView {
     
     let message: String
     
-    init(message:String) {
+    init(frame: CGRect, message: String) {
         self.message = message
-        super.init()
+        super.init(frame: frame)
+        configureUI()
     }
     
     required init?(coder: NSCoder) {
@@ -70,13 +71,5 @@ class ToolTipView: UIView {
         tooltipLabel.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         
         self.layer.addSublayer(pointer)
-//        (superview ?? self).addSubview(tooltip)
-//        tooltip.translatesAutoresizingMaskIntoConstraints = false
-//        tooltip.bottomAnchor.constraint(equalTo: topAnchor, constant: -tooltipBottomPadding + pointerHeight).isActive = true
-//        tooltip.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-//        tooltip.heightAnchor.constraint(equalToConstant: labelHeight + pointerHeight).isActive = true
-//        tooltip.widthAnchor.constraint(equalToConstant: labelWidth).isActive = true
-//        
-//        tooltip.alpha = 0
     }
 }

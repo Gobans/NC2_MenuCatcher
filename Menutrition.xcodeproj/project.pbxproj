@@ -15,7 +15,7 @@
 		912AD21528C08D76009525A5 /* FoodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912AD21428C08D76009525A5 /* FoodCell.swift */; };
 		913BC61B28E9586A006FACFF /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913BC61A28E9586A006FACFF /* UIView+Extension.swift */; };
 		913BC61D28E95889006FACFF /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913BC61C28E95889006FACFF /* String+Extension.swift */; };
-		913BC61F28E95C40006FACFF /* ToolTipButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913BC61E28E95C40006FACFF /* ToolTipButton.swift */; };
+		913BC61F28E95C40006FACFF /* ToolTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 913BC61E28E95C40006FACFF /* ToolTipView.swift */; };
 		915CE6C228B73AFA0009CBD6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */; };
 		915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */; };
 		915CE6C628B73AFA0009CBD6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915CE6C528B73AFA0009CBD6 /* ViewController.swift */; };
@@ -41,7 +41,7 @@
 		912AD21428C08D76009525A5 /* FoodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCell.swift; sourceTree = "<group>"; };
 		913BC61A28E9586A006FACFF /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		913BC61C28E95889006FACFF /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
-		913BC61E28E95C40006FACFF /* ToolTipButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolTipButton.swift; sourceTree = "<group>"; };
+		913BC61E28E95C40006FACFF /* ToolTipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolTipView.swift; sourceTree = "<group>"; };
 		915CE6BE28B73AFA0009CBD6 /* Menutrition.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Menutrition.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -107,7 +107,7 @@
 				915CE6CC28B73AFB0009CBD6 /* LaunchScreen.storyboard */,
 				915CE6CF28B73AFB0009CBD6 /* Info.plist */,
 				9103E3F628BDBDCF0011F3E8 /* FoodDB.sqlite3 */,
-				913BC61E28E95C40006FACFF /* ToolTipButton.swift */,
+				913BC61E28E95C40006FACFF /* ToolTipView.swift */,
 				9184F15228E6D88900C5A501 /* Enum+Nutrition.swift */,
 				91E75AE528D5F5E4003EF1DC /* NutritionPaddingLabel.swift */,
 				91DAF93E28E32898009A4880 /* CategoryPaddingLabel.swift */,
@@ -206,7 +206,7 @@
 				915CE6C228B73AFA0009CBD6 /* AppDelegate.swift in Sources */,
 				91947BAC28D4AE4800772DF6 /* UIColor+Extension.swift in Sources */,
 				9103E3F228BDACCC0011F3E8 /* Sqlite.swift in Sources */,
-				913BC61F28E95C40006FACFF /* ToolTipButton.swift in Sources */,
+				913BC61F28E95C40006FACFF /* ToolTipView.swift in Sources */,
 				9184F15328E6D88900C5A501 /* Enum+Nutrition.swift in Sources */,
 				913BC61D28E95889006FACFF /* String+Extension.swift in Sources */,
 				91DAF93D28E2E1C8009A4880 /* FilterScrollView.swift in Sources */,
