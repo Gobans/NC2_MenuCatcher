@@ -356,6 +356,8 @@ class FoodCell: SwipeCollectionViewCell {
     }
     @objc private func showRecognizedText() {
         guard let recognizedText = food?.recognizedText else {return}
+        print(recognizedTextButton.centerXAnchor)
+        print(recognizedTextButton.centerYAnchor)
         tooltipDelegate?.displayToolTip(centerX: recognizedTextButton.centerXAnchor, centerY: recognizedTextButton.centerYAnchor, recognizedText: recognizedText)
     }
 }

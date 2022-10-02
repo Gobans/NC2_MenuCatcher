@@ -144,7 +144,7 @@ final class ViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: filterScorllView.bottomAnchor),
+            collectionView.topAnchor.constraint(equalTo: filterScorllView.bottomAnchor, constant: 20),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -343,10 +343,10 @@ extension UICollectionViewDiffableDataSource {
 extension ViewController: SwipeCollectionViewCellDelegate {
     func collectionView(_ collectionView: UICollectionView, editActionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
         guard orientation == .right else { return nil }
+        self.swipeCellIndexPath = indexPath
         let cell = collectionView.cellForItem(at: indexPath) as? FoodCell
         if cell?.isSelected == true {
             cell?.isSwipeDeleting = true
-            self.swipeCellIndexPath = indexPath
         }
         let deleteAction = SwipeAction(style: .destructive , title: nil) { action, indexPath in
             // handle action by updating model with deletion
@@ -358,8 +358,8 @@ extension ViewController: SwipeCollectionViewCellDelegate {
         }
         // customize the action appearance
         let deleteImageWithColor = UIImage(systemName: "trash.fill")?.withTintColor(UIColor(hexString: "#F3645B"), renderingMode: .alwaysOriginal)
-        deleteAction.image = deleteImageWithColor
         deleteAction.transitionDelegate = self
+        deleteAction.image = deleteImageWithColor
         deleteAction.backgroundColor = UIColor(hexString: "#FFE6E3")
         return [deleteAction]
     }
@@ -371,12 +371,24 @@ extension ViewController: SwipeCollectionViewCellDelegate {
     }
 }
 
+var swipeOffsetForRecognizedText: [String:CGFloat] = [:]
+var TooltipViewForRecognizedText: [String:UIView] = [:]
+
 extension ViewController: SwipeActionTransitioning {
     func didTransition(with context: SwipeActionTransitioningContext) {
+        guard let swipeCellIndexPath else {return}
+        guard let cell = collectionView.cellForItem(at: swipeCellIndexPath) as? FoodCell else {return}
         if context.newPercentVisible == 0 {
-            guard let swipeCellIndexPath else {return}
-            let cell = collectionView.cellForItem(at: swipeCellIndexPath) as? FoodCell
-            cell?.isSwipeDeleting = false
+            cell.isSwipeDeleting = false
+        }
+        swipeOffsetForRecognizedText[cell.food!.recognizedText] = cell.swipeOffset
+        guard let toolTipView = TooltipViewForRecognizedText[cell.food!.recognizedText] else {return}
+        print(TooltipViewForRecognizedText)
+        print(cell.swipeOffset)
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 0.2) {
+                toolTipView.frame.origin.x -= cell.swipeOffset
+            }
         }
     }
 }
@@ -384,14 +396,18 @@ extension ViewController: SwipeActionTransitioning {
 extension ViewController: EnableDisplayToolTipView {
     func displayToolTip(centerX: NSLayoutXAxisAnchor, centerY: NSLayoutYAxisAnchor, recognizedText: String) {
         let toolTipEmptyView = UIView()
+        print("initialToolTipEmptyView")
+        print(toolTipEmptyView)
         self.collectionView.addSubview(toolTipEmptyView)
         toolTipEmptyView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             toolTipEmptyView.centerXAnchor.constraint(equalTo: centerX),
             toolTipEmptyView.centerYAnchor.constraint(equalTo: centerY)
         ])
+        TooltipViewForRecognizedText[recognizedText] = toolTipEmptyView
         toolTipEmptyView.displayTooltip(recognizedText) {
             toolTipEmptyView.removeFromSuperview()
+            TooltipViewForRecognizedText.removeValue(forKey: recognizedText)
         }
     }
 }
