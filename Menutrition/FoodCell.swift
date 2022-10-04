@@ -51,7 +51,7 @@ class FoodCell: SwipeCollectionViewCell {
     }()
     private let subtitleLabel: UILabel = {
         let subtitleLabel = UILabel()
-        subtitleLabel.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 11)
+        subtitleLabel.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 14)
         subtitleLabel.textColor = UIColor(hexString: "#868686")
         return subtitleLabel
     }()
@@ -114,7 +114,7 @@ class FoodCell: SwipeCollectionViewCell {
         let UIStackView = UIStackView(arrangedSubviews: [foodCategoryImageView, titleLabelStackView, titleContentUIView])
         UIStackView.axis = .horizontal
         UIStackView.distribution = .fill
-        UIStackView.alignment = .leading
+        UIStackView.alignment = .center
         UIStackView.spacing = 14
         return UIStackView
     }()
@@ -122,6 +122,7 @@ class FoodCell: SwipeCollectionViewCell {
         let UIStackView = UIStackView(arrangedSubviews: [nameLabel, subtitleLabel])
         UIStackView.axis = .vertical
         UIStackView.distribution = .fillProportionally
+        UIStackView.spacing = 5
         return UIStackView
     }()
     private lazy var nutritionRootStackView: UIStackView = {
@@ -204,10 +205,10 @@ class FoodCell: SwipeCollectionViewCell {
         backgroundColor = .white
         clipsToBounds = true
         layer.cornerRadius = cornerRadius
-        servingLabel.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 11)
+        servingLabel.font = UIFont(name: "Roboto-SemiBold", size: 14)
         nutritionLabels.enumerated().forEach{(index, label) in
             label.text = "\(nutritionLabelText[index])"
-            label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 11)
+            label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 14)
             label.textAlignment = .center
             label.textColor = .white
             label.backgroundColor = .black
@@ -216,7 +217,6 @@ class FoodCell: SwipeCollectionViewCell {
             label.layer.masksToBounds = true
         }
         nutritionNumberLabels.enumerated().forEach{(index, label) in
-            label.font = UIFont(name: "Roboto-SemiBold", size: 13)
             label.textAlignment = .center
         }
     }
@@ -233,7 +233,7 @@ class FoodCell: SwipeCollectionViewCell {
         
         rootStack.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            rootStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: rootPadding),
+            rootStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 22),
             rootStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: rootPadding),
             rootStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -rootPadding),
         ])
@@ -248,7 +248,7 @@ class FoodCell: SwipeCollectionViewCell {
         disclosureIndicator.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             disclosureIndicator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -31),
-            disclosureIndicator.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
+            disclosureIndicator.centerYAnchor.constraint(equalTo: titleContentStackView.centerYAnchor),
             disclosureIndicator.heightAnchor.constraint(equalToConstant: 10),
             disclosureIndicator.widthAnchor.constraint(equalToConstant: 18),
         ])
@@ -290,7 +290,7 @@ class FoodCell: SwipeCollectionViewCell {
         ])
         
         closedConstraint =
-        titleContentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -labelPadding)
+        titleContentStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -22)
         closedConstraint?.priority = .defaultLow // use low priority so stack stays pinned to top of cell
         
         openConstraint =
@@ -301,9 +301,9 @@ class FoodCell: SwipeCollectionViewCell {
         recognizedTextButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             recognizedTextButton.heightAnchor.constraint(equalTo: nameLabel.heightAnchor),
-            recognizedTextButton.widthAnchor.constraint(equalTo: disclosureIndicator.widthAnchor),
-            recognizedTextButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
-            recognizedTextButton.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 13)
+            recognizedTextButton.widthAnchor.constraint(equalTo: recognizedTextButton.heightAnchor),
+            recognizedTextButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor, constant: -1),
+            recognizedTextButton.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 10)
         ])
     }
     
@@ -311,28 +311,36 @@ class FoodCell: SwipeCollectionViewCell {
         guard let food = food else { return }
         nameLabel.text = food.name
         servingLabel.text = "1회 제공량 : \(food.serving)\(food.unit)"
-        let attributedStr = NSMutableAttributedString(string: servingLabel.text!)
+        let attributedStr = NSMutableAttributedString(string: servingLabel.text!, attributes: [ .font: UIFont(name: "AppleSDGothicNeo-Bold", size: 14)!])
         attributedStr.addAttribute(.foregroundColor, value: UIColor(hexString: "#CFCFCF"), range: (servingLabel.text! as NSString).range(of: "1회 제공량 :"))
         servingLabel.attributedText = attributedStr
-        energyNumberLabel.text = "\(food.energy.getNoDigitString())kcal"
-        carbohydrateNumberLabel.text = "\(food.carbohydrate.getOneDigitString())g"
-        proteinNumberLabel.text = "\(food.protein.getOneDigitString())g"
-        fatNumberLabel.text = "\(food.fat.getOneDigitString())g"
-        sugarNumberLabel.text = "\(food.sugar.getOneDigitString())g"
-        caffeineNumberLabel.text = "\(food.caffeine.getOneDigitString())mg"
-        natriumNumberLabel.text = "\(food.natrium.getOneDigitString())mg"
+        let energyNumberLabelText = "\(food.energy.getNoDigitString())kcal"
+        let carbohydrateNumberLabelText = "\(food.carbohydrate.getOneDigitString())g"
+        let proteinNumberLabelText = "\(food.protein.getOneDigitString())g"
+        let fatNumberLabelText = "\(food.fat.getOneDigitString())g"
+        let sugarNumberLabelText = "\(food.sugar.getOneDigitString())g"
+        let caffeineNumberLabelText = "\(food.caffeine.getOneDigitString())mg"
+        let natriumNumberLabelText = "\(food.natrium.getOneDigitString())mg"
+        energyNumberLabel.attributedText = makeRobotoAttributeString(energyNumberLabelText)
+        carbohydrateNumberLabel.attributedText = makeRobotoAttributeString(carbohydrateNumberLabelText)
+        proteinNumberLabel.attributedText = makeRobotoAttributeString(proteinNumberLabelText)
+        fatNumberLabel.attributedText = makeRobotoAttributeString(fatNumberLabelText)
+        sugarNumberLabel.attributedText = makeRobotoAttributeString(sugarNumberLabelText)
+        caffeineNumberLabel.attributedText = makeRobotoAttributeString(caffeineNumberLabelText)
+        natriumNumberLabel.attributedText = makeRobotoAttributeString(natriumNumberLabelText)
+        
         subtitleLabel.text = food.category
         switch food.category {
         case "기타 빵류", "샌드위치류", "식빵류":
             let categoryImage = UIImage(named: "빵류")
             foodCategoryImageView.image = categoryImage
-        case "과일 채소음료류", "기타 음료류", "스무디류", "차류", "커피류", "탄산 음료류":
+        case "과일 채소음료류", "기타 음료류", "스무디류", "차류", "커피류", "탄산음료류":
             let categoryImage = UIImage(named: "음료류")
             foodCategoryImageView.image = categoryImage
         case "기타 음식류", "튀김류", "피자류":
             let categoryImage = UIImage(named: "음식류")
             foodCategoryImageView.image = categoryImage
-        case "아이스크림류", "페이스트리류", "케이크류":
+        case "아이스크림류", "페이스트리류", "케이크류", "과자류":
             let categoryImage = UIImage(named: "디저트류")
             foodCategoryImageView.image = categoryImage
         default:
@@ -343,6 +351,10 @@ class FoodCell: SwipeCollectionViewCell {
         } else {
             recognizedTextButton.isHidden = true
         }
+    }
+    private func makeRobotoAttributeString(_ string: String) -> NSMutableAttributedString {
+        let attributedStr = NSMutableAttributedString(string: string, attributes: [ .font: UIFont(name: "AppleSDGothicNeo-Bold", size: 14)!])
+        return attributedStr
     }
     private func updateAppearance() {
         if !isSwipeDeleting {

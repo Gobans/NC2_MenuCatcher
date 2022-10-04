@@ -9,8 +9,8 @@ import UIKit
 import Foundation
 
 class CategoryPaddingLabel: UILabel {
-    var topInset: CGFloat = 5.0
-    var bottomInset: CGFloat = 5.0
+    var topInset: CGFloat = 4.0
+    var bottomInset: CGFloat = 3.0
     var leftInset: CGFloat = 18
     var rightInset: CGFloat = 18
  

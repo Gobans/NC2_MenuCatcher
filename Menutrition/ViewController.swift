@@ -57,13 +57,7 @@ final class ViewController: UIViewController {
         button.addTarget(self, action: #selector(startSinggleScanning), for: .touchUpInside)
         button.tintColor = .white
         button.backgroundColor = .black
-        button.layer.cornerRadius = 0.5 * 60
-        return button
-    }()
-    
-    lazy var deleteButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "trash") , style: .plain, target: self, action: #selector(deleteFoodData))
-        button.tintColor = .systemBlue
+        button.layer.cornerRadius = 0.5 * 76
         return button
     }()
     
@@ -106,7 +100,6 @@ final class ViewController: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = UIColor(hexString: "FAFAFA")
-        navigationItem.leftBarButtonItem = deleteButton
         navigationItem.title = "메뉴 캐처"
         navigationController?.navigationBar.prefersLargeTitles = true
         configureSubViews()
@@ -182,11 +175,11 @@ final class ViewController: UIViewController {
     
     private func configureConstratints() {
         filterScorllView.translatesAutoresizingMaskIntoConstraints = false
+        filterScorllView.contentInset = .init(top: 0, left: 20, bottom: 0, right: 20)
         NSLayoutConstraint.activate([
             filterScorllView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            filterScorllView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            filterScorllView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -20),
-            filterScorllView.heightAnchor.constraint(equalToConstant: 23)
+            filterScorllView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            filterScorllView.widthAnchor.constraint(equalTo: view.widthAnchor),
         ])
         
         catchSinggleButton.translatesAutoresizingMaskIntoConstraints = false
@@ -199,10 +192,10 @@ final class ViewController: UIViewController {
         
         singleScanButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            singleScanButton.bottomAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.bottomAnchor, constant: -40),
+            singleScanButton.bottomAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.bottomAnchor, constant: -30),
             singleScanButton.trailingAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.trailingAnchor, constant: -30),
-            singleScanButton.heightAnchor.constraint(equalToConstant: 60),
-            singleScanButton.widthAnchor.constraint(equalToConstant: 60)
+            singleScanButton.heightAnchor.constraint(equalToConstant: 76),
+            singleScanButton.widthAnchor.constraint(equalToConstant: 76)
         ])
     }
     
@@ -269,11 +262,6 @@ final class ViewController: UIViewController {
         }
         dataSingleScannerViewController.dismiss(animated: true)
         dataSingleScannerViewController.stopScanning()
-    }
-    
-    @objc private func deleteFoodData() {
-        foodDataArray.removeAll()
-        updateFoodDataSource()
     }
     
     private func updateFoodDataSource() {

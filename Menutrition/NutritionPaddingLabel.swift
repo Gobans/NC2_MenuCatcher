@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 
 class NutritionPaddingLabel: UILabel {
-    var topInset: CGFloat = 3.0
+    var topInset: CGFloat = 4.0
     var bottomInset: CGFloat = 3.0
     var leftInset: CGFloat = 0
     var rightInset: CGFloat = 0
