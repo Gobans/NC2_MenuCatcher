@@ -285,7 +285,6 @@ final class ViewController: UIViewController {
             self.catchSinggleLabel.alpha = 1
         }, completion: { _ in
             UIView.animate(withDuration: 0.5, delay: 1, animations: {
-                self.catchSinggleLabel.frame.origin.y -= 10
                 self.catchSinggleLabel.alpha = 0.4
             }, completion: { isSucceced in
                 

@@ -20,10 +20,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let rootViewController = ViewController()
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
+        let isUserSeenOnboarding = UserDefaults.standard.isUserSeenOnboarding
+        switch isUserSeenOnboarding {
+        case false:
+            let rootViewController = ViewController()
+            let navigationController = UINavigationController(rootViewController: rootViewController)
+            navigationController.pushViewController(OnboardingViewController(), animated: false)
+            window?.rootViewController = navigationController
+            window?.makeKeyAndVisible()
+        case true:
+            let rootViewController = ViewController()
+            let navigationController = UINavigationController(rootViewController: rootViewController)
+            window?.rootViewController = navigationController
+            window?.makeKeyAndVisible()
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
