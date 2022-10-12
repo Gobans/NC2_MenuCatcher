@@ -324,21 +324,24 @@ class FoodCell: SwipeCollectionViewCell {
         sugarNumberLabel.attributedText = makeRobotoAttributeString(sugarNumberLabelText)
         caffeineNumberLabel.attributedText = makeRobotoAttributeString(caffeineNumberLabelText)
         natriumNumberLabel.attributedText = makeRobotoAttributeString(natriumNumberLabelText)
-        
-        subtitleLabel.text = food.category
+
         switch food.category {
         case "기타 빵류", "샌드위치류", "식빵류":
             let categoryImage = UIImage(named: "빵류")
             foodCategoryImageView.image = categoryImage
+            subtitleLabel.text = "빵류"
         case "과일 채소음료류", "기타 음료류", "스무디류", "차류", "커피류", "탄산음료류":
             let categoryImage = UIImage(named: "음료류")
             foodCategoryImageView.image = categoryImage
+            subtitleLabel.text = "음료류"
         case "기타 음식류", "튀김류", "피자류":
             let categoryImage = UIImage(named: "음식류")
             foodCategoryImageView.image = categoryImage
+            subtitleLabel.text = "음식류"
         case "아이스크림류", "페이스트리류", "케이크류", "과자류":
             let categoryImage = UIImage(named: "디저트류")
             foodCategoryImageView.image = categoryImage
+            subtitleLabel.text = "디저트류"
         default:
             print("none")
         }
