@@ -8,6 +8,30 @@
 import UIKit
 
 class FoodCollectionView: UICollectionView {
+    lazy var initialUIView: UIView = {
+       let uiView = UIView()
+        return uiView
+    }()
+    private let initialImageView: UIImageView = {
+        let imageView = UIImageView()
+        let noDataImage = UIImage(named: "NoData")
+        imageView.image = noDataImage
+        return imageView
+    }()
+    private let initialLabel: UILabel = {
+        let label = UILabel()
+        label.text = "스캔한 음식정보가 아직 없네요"
+        return label
+    }()
+    override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
+        super.init(frame: frame, collectionViewLayout: layout)
+        setUpConstraints()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     func allFoodCells() -> [FoodCell] {
         var cells = [FoodCell]()
         for i in 0...self.numberOfSections-1
@@ -22,6 +46,31 @@ class FoodCollectionView: UICollectionView {
             }
         }
         return cells
+    }
+    
+    func setUpConstraints() {
+        addSubview(initialUIView)
+        initialUIView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            initialUIView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -110),
+            initialUIView.centerXAnchor.constraint(equalTo: centerXAnchor)
+        ])
+        
+        initialUIView.addSubview(initialImageView)
+        initialImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            initialImageView.centerYAnchor.constraint(equalTo: initialUIView.centerYAnchor),
+            initialImageView.centerXAnchor.constraint(equalTo: initialUIView.centerXAnchor),
+            initialImageView.heightAnchor.constraint(equalToConstant: 60),
+            initialImageView.widthAnchor.constraint(equalToConstant: 60)
+        ])
+        
+        initialUIView.addSubview(initialLabel)
+        initialLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            initialLabel.centerXAnchor.constraint(equalTo: initialUIView.centerXAnchor),
+            initialLabel.topAnchor.constraint(equalTo: initialImageView.bottomAnchor, constant: 20)
+        ])
     }
 }
 

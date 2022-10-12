@@ -265,6 +265,7 @@ final class ViewController: UIViewController {
             if var food = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
                 food.recognizedText = foodName
                 foodDataArray.insert(food, at: foodInsertIndex)
+                collectionView.initialUIView.isHidden = true
                 foodInsertIndex += 1
                 DispatchQueue.main.async {
                     self.updateFoodDataSource()
@@ -384,6 +385,8 @@ extension ViewController: SwipeCollectionViewCellDelegate {
             snapshot.appendSections([.main])
             snapshot.appendItems(self.foodDataArray)
             self.dataSource?.apply(snapshot, animatingDifferences: true)
+            let initialView = collectionView as? FoodCollectionView
+            initialView?.initialUIView.isHidden = self.foodDataArray.isEmpty ? false : true
         }
         // customize the action appearance
         let deleteImageWithColor = UIImage(systemName: "trash.fill")?.withTintColor(UIColor(hexString: "#F3645B"), renderingMode: .alwaysOriginal)
