@@ -93,12 +93,6 @@ class FoodCell: SwipeCollectionViewCell {
     }()
     
     // StackViews
-    private lazy var rootStack: UIStackView = {
-        let rootStack = UIStackView(arrangedSubviews: [labelStack])
-        rootStack.alignment = .top
-        rootStack.distribution = .fillProportionally
-        return rootStack
-    }()
     private lazy var labelStack: UIStackView = {
         let labelStack = UIStackView(arrangedSubviews: [
             titleContentStackView,
@@ -106,8 +100,10 @@ class FoodCell: SwipeCollectionViewCell {
             servingLabel,
             nutritionRootStackView
         ])
+        labelStack.alignment = .top
         labelStack.axis = .vertical
         labelStack.spacing = labelPadding
+        labelStack.distribution = .fillProportionally
         return labelStack
     }()
     private lazy var titleContentStackView: UIStackView = {
@@ -222,7 +218,7 @@ class FoodCell: SwipeCollectionViewCell {
     }
     
     private func setUpConstraints() {
-        contentView.addSubview(rootStack)
+        contentView.addSubview(labelStack)
         contentView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: topAnchor),
@@ -231,11 +227,11 @@ class FoodCell: SwipeCollectionViewCell {
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
         
-        rootStack.translatesAutoresizingMaskIntoConstraints = false
+        labelStack.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            rootStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 22),
-            rootStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: rootPadding),
-            rootStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -rootPadding),
+            labelStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 22),
+            labelStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: rootPadding),
+            labelStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -rootPadding),
         ])
         
         foodCategoryImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -256,9 +252,9 @@ class FoodCell: SwipeCollectionViewCell {
         contentView.addSubview(seperatorView)
         seperatorView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            seperatorView.widthAnchor.constraint(equalTo: rootStack.widthAnchor),
+            seperatorView.widthAnchor.constraint(equalTo: labelStack.widthAnchor),
             seperatorView.heightAnchor.constraint(equalToConstant: 1),
-            seperatorView.centerXAnchor.constraint(equalTo: rootStack.centerXAnchor),
+            seperatorView.centerXAnchor.constraint(equalTo: labelStack.centerXAnchor),
             seperatorView.centerYAnchor.constraint(equalTo: spacerView.centerYAnchor)
         ])
         
@@ -281,12 +277,12 @@ class FoodCell: SwipeCollectionViewCell {
         
         nutritionLeftLabelStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            nutritionLeftLabelStackView.widthAnchor.constraint(equalTo: rootStack.widthAnchor, multiplier: 0.2)
+            nutritionLeftLabelStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2)
         ])
         
         nutritionRightLabelStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            nutritionRightLabelStackView.widthAnchor.constraint(equalTo: rootStack.widthAnchor, multiplier: 0.2)
+            nutritionRightLabelStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2)
         ])
         
         closedConstraint =
