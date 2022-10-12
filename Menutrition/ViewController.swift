@@ -61,24 +61,41 @@ final class ViewController: UIViewController {
         return button
     }()
     
+    private var catchSinggleLabel: UILabel = {
+        $0.text = "메뉴판을 스캔해주세요"
+        $0.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 13)
+        $0.textColor = .white
+        $0.textAlignment = .center
+        return $0
+    }(UILabel())
+    
     lazy var catchSinggleButton: UIButton = {
         let button = UIButton()
         button.addTarget(self, action: #selector(catchText), for: .touchUpInside)
         button.configuration = .filled()
-        button.setTitle("Catch", for: .normal)
         button.isUserInteractionEnabled = false
-        button.configuration?.background.backgroundColor = .gray
+        button.configuration?.background.backgroundColor = UIColor(hexString: "#878787")
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 0.5 * 71.58
         return button
     }()
+    private var catchSinggleButtonBorderUIView: UIView = {
+        $0.layer.borderColor = UIColor(hexString: "#878787").cgColor
+        $0.layer.borderWidth = 2.5
+        $0.layer.cornerRadius = 0.5 * 80
+        return $0
+    }(UIView())
     
     var currentItems: [RecognizedItem.ID: String] = [:] {
         didSet {
             if currentItems.isEmpty {
                 catchSinggleButton.isUserInteractionEnabled = false
-                catchSinggleButton.configuration?.background.backgroundColor = .gray
+                catchSinggleButtonBorderUIView.layer.borderColor = UIColor(hexString: "#878787").cgColor
+                catchSinggleButton.configuration?.background.backgroundColor =  UIColor(hexString: "#878787")
             } else {
                 catchSinggleButton.isUserInteractionEnabled = true
-                catchSinggleButton.configuration?.background.backgroundColor = .systemBlue
+                catchSinggleButtonBorderUIView.layer.borderColor = UIColor.white.cgColor
+                catchSinggleButton.configuration?.background.backgroundColor = .white
             }
         }
     }
@@ -170,7 +187,9 @@ final class ViewController: UIViewController {
     private func configureSubViews() {
         view.addSubview(filterScorllView)
         collectionView.addSubview(singleScanButton)
-        dataSingleScannerViewController.view.addSubview(catchSinggleButton)
+        dataSingleScannerViewController.view.addSubview(catchSinggleButtonBorderUIView)
+        dataSingleScannerViewController.view.addSubview(catchSinggleLabel)
+        catchSinggleButtonBorderUIView.addSubview(catchSinggleButton)
     }
     
     private func configureConstratints() {
@@ -182,12 +201,26 @@ final class ViewController: UIViewController {
             filterScorllView.widthAnchor.constraint(equalTo: view.widthAnchor),
         ])
         
+        catchSinggleLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            catchSinggleLabel.centerXAnchor.constraint(equalTo: dataSingleScannerViewController.view.centerXAnchor),
+            catchSinggleLabel.bottomAnchor.constraint(equalTo: catchSinggleButtonBorderUIView.topAnchor, constant: -11),
+        ])
+        
+        catchSinggleButtonBorderUIView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            catchSinggleButtonBorderUIView.centerXAnchor.constraint(equalTo: dataSingleScannerViewController.view.centerXAnchor),
+            catchSinggleButtonBorderUIView.bottomAnchor.constraint(equalTo: dataSingleScannerViewController.view.bottomAnchor, constant: -66),
+            catchSinggleButtonBorderUIView.widthAnchor.constraint(equalToConstant: 80),
+            catchSinggleButtonBorderUIView.heightAnchor.constraint(equalToConstant: 80)
+        ])
+        
         catchSinggleButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             catchSinggleButton.centerXAnchor.constraint(equalTo: dataSingleScannerViewController.view.centerXAnchor),
-            catchSinggleButton.bottomAnchor.constraint(equalTo: dataSingleScannerViewController.view.bottomAnchor, constant: -100),
-            catchSinggleButton.widthAnchor.constraint(equalToConstant: 110),
-            catchSinggleButton.heightAnchor.constraint(equalToConstant: 60)
+            catchSinggleButton.bottomAnchor.constraint(equalTo: catchSinggleButtonBorderUIView.bottomAnchor, constant: -4.21),
+            catchSinggleButton.widthAnchor.constraint(equalToConstant: 71.58),
+            catchSinggleButton.heightAnchor.constraint(equalToConstant: 71.58)
         ])
         
         singleScanButton.translatesAutoresizingMaskIntoConstraints = false
@@ -247,6 +280,16 @@ final class ViewController: UIViewController {
             present(dataSingleScannerViewController, animated: true)
             try? self.dataSingleScannerViewController.startScanning()
         }
+        UIView.animate(withDuration: 0.2, animations: {
+            self.catchSinggleLabel.alpha = 1
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.5, delay: 1, animations: {
+                self.catchSinggleLabel.frame.origin.y -= 10
+                self.catchSinggleLabel.alpha = 0.4
+            }, completion: { isSucceced in
+                
+            })
+        })
     }
     
     @objc private func catchText() {
