@@ -1,17 +1,17 @@
 //
-//  OnboardingTwo.swift
+//  OnboardingFour.swift
 //  Menutrition
 //
-//  Created by Lee Myeonghwan on 2022/10/12.
+//  Created by Lee Myeonghwan on 2022/10/15.
 //
 
 import UIKit
 
-final class OnboardingTwo: UIViewController {
+final class OnboardingFour: UIViewController {
     
     private let onboardingImageView: UIImageView = {
         let imageView = UIImageView()
-        let image = UIImage(named: "Onboarding2")
+        let image = UIImage(named: "Onboarding4")
         imageView.image = image
         return imageView
     }()
@@ -22,8 +22,8 @@ final class OnboardingTwo: UIViewController {
         label.numberOfLines = 4
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.25
-        label.attributedText = NSMutableAttributedString(string: "혹시 같은 메뉴가 없다면\n비슷한 음식의 영양정보를 찾아드려요!", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
-        label.textAlignment = .left
+        label.attributedText = NSMutableAttributedString(string: "메뉴캐쳐와 함께\n스캔하러 가볼까요?", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.textAlignment = .center
         return label
     }()
 

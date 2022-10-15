@@ -18,9 +18,12 @@ final class OnboardingOne: UIViewController {
     
     private let onboardingLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 20)
+        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 17)
         label.numberOfLines = 4
-        label.text = "식당에서 메뉴판을 스캔하여\n영양정보를 확인하세요!"
+        var paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.25
+        label.attributedText = NSMutableAttributedString(string: "식당에서 메뉴판을 스캔하여\n영양정보를 확인하세요!", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.textAlignment = .left
         return label
     }()
     
@@ -44,6 +47,7 @@ final class OnboardingOne: UIViewController {
         NSLayoutConstraint.activate([
             onboardingLabel.topAnchor.constraint(equalTo: onboardingImageView.bottomAnchor),
             onboardingLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            onboardingLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
     }
 }

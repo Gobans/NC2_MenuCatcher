@@ -302,6 +302,13 @@ final class ViewController: UIViewController {
         }
         Task {
             await endScan(splitedStringArray: splitedStringArray)
+            if foodDataArray.isEmpty {
+                collectionView.initialImageView.image = UIImage(named: "Alertfrok")
+                var paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.lineHeightMultiple = 1.19
+                collectionView.initialLabel.attributedText = NSMutableAttributedString(string: "스캔정보가 없네요!\n다시 한 번 스캔해주세요", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                collectionView.initialLabel.textAlignment = .center
+            }
         }
         dataSingleScannerViewController.dismiss(animated: true)
         dataSingleScannerViewController.stopScanning()
@@ -386,6 +393,13 @@ extension ViewController: SwipeCollectionViewCellDelegate {
             self.dataSource?.apply(snapshot, animatingDifferences: true)
             let initialView = collectionView as? FoodCollectionView
             initialView?.initialUIView.isHidden = self.foodDataArray.isEmpty ? false : true
+            if self.foodDataArray.isEmpty {
+                self.collectionView.initialImageView.image = UIImage(named: "NoData")
+                var paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.lineHeightMultiple = 1.19
+                self.collectionView.initialLabel.attributedText = NSMutableAttributedString(string: "아래 버튼을 눌러 메뉴를 스캔해요", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                self.collectionView.initialLabel.textAlignment = .center
+            }
         }
         // customize the action appearance
         let deleteImageWithColor = UIImage(systemName: "trash.fill")?.withTintColor(UIColor(hexString: "#F3645B"), renderingMode: .alwaysOriginal)

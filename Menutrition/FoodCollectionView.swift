@@ -12,15 +12,21 @@ class FoodCollectionView: UICollectionView {
        let uiView = UIView()
         return uiView
     }()
-    private let initialImageView: UIImageView = {
+    let initialImageView: UIImageView = {
         let imageView = UIImageView()
         let noDataImage = UIImage(named: "NoData")
         imageView.image = noDataImage
         return imageView
     }()
-    private let initialLabel: UILabel = {
+    let initialLabel: UILabel = {
         let label = UILabel()
-        label.text = "스캔한 음식정보가 아직 없네요"
+        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 14)
+        label.textColor = UIColor(hexString: "background: #868686")
+        var paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.19
+        label.attributedText = NSMutableAttributedString(string: "아래 버튼을 눌러 메뉴를 스캔해요", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.textAlignment = .center
+        label.numberOfLines = 2
         return label
     }()
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
@@ -61,8 +67,8 @@ class FoodCollectionView: UICollectionView {
         NSLayoutConstraint.activate([
             initialImageView.centerYAnchor.constraint(equalTo: initialUIView.centerYAnchor),
             initialImageView.centerXAnchor.constraint(equalTo: initialUIView.centerXAnchor),
-            initialImageView.heightAnchor.constraint(equalToConstant: 60),
-            initialImageView.widthAnchor.constraint(equalToConstant: 60)
+            initialImageView.heightAnchor.constraint(equalToConstant: 130),
+            initialImageView.widthAnchor.constraint(equalToConstant: 200)
         ])
         
         initialUIView.addSubview(initialLabel)

@@ -13,15 +13,17 @@ final class OnboardingViewController: UIViewController {
     lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
         pageControl.currentPageIndicatorTintColor = .black
-        pageControl.pageIndicatorTintColor = .gray
-        pageControl.numberOfPages = 3
+        pageControl.pageIndicatorTintColor = UIColor(hexString: "#CFCFCF")
+        pageControl.numberOfPages = 4
         pageControl.currentPage = 0
+        pageControl.preferredIndicatorImage = UIImage(named: "PageIndicator")
         return pageControl
     }()
     var currentIndex: Int? {
         willSet(newValue) {
             if newValue == onboardingViewControllers.count - 1 {
                 nextButton.setImage(nil, for: .normal)
+                nextButton.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 18)
                 nextButton.setTitle("시작하기", for: .normal)
                 isLastOnboardingPage = true
             }
@@ -39,8 +41,10 @@ final class OnboardingViewController: UIViewController {
     private let onboardingOne = OnboardingOne()
     private let onboardingTwo = OnboardingTwo()
     private let onboardingThree = OnboardingThree()
+    private let onboardingFour = OnboardingFour()
+    
     lazy var onboardingViewControllers: [UIViewController] = {
-        return [onboardingOne, onboardingTwo, onboardingThree]
+        return [onboardingOne, onboardingTwo, onboardingThree, onboardingFour]
     }()
     private lazy var nextButton: UIButton = {
         let button = UIButton()
@@ -100,7 +104,7 @@ final class OnboardingViewController: UIViewController {
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor,constant: -60),
-            pageControl.leadingAnchor.constraint(equalTo: view.leadingAnchor,constant: 20)
+            pageControl.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         ])
         
         view.addSubview(nextButton)
