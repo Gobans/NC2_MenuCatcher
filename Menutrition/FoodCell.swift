@@ -16,7 +16,6 @@ protocol EnableDisplayToolTipView {
     func displayToolTip(centerX: NSLayoutXAxisAnchor, topAnchor: NSLayoutYAxisAnchor, recognizedText: String)
 }
 
-
 class FoodCell: SwipeCollectionViewCell {
     static let identifier = "FoodCollectionViewCell"
     
@@ -24,6 +23,23 @@ class FoodCell: SwipeCollectionViewCell {
     var food: Food? { didSet { updateContent() } }
     override var isSelected: Bool { didSet { updateAppearance() } }
     var isSwipeDeleting: Bool = false
+    var highlightItem: NutritionName? {
+        willSet {
+            guard let newValue else {
+                nutritionNumberViews.forEach { HighlightNumberView in
+                    HighlightNumberView.highlightUIView.alpha = 0
+                }
+                return
+            }
+            nutritionNumberViews.forEach { HighlightNumberView in
+                if HighlightNumberView.distinct == newValue {
+                    HighlightNumberView.highlightUIView.alpha = 1
+                } else {
+                    HighlightNumberView.highlightUIView.alpha = 0
+                }
+            }
+        }
+    }
     
     // Views
     private let foodCategoryImageView: UIImageView = {
@@ -67,7 +83,7 @@ class FoodCell: SwipeCollectionViewCell {
     }()
     private let servingLabel = UILabel()
     private lazy var nutritionLabels: [NutritionPaddingLabel] = [energyLabel, carbohydrateLabel, proteinLabel, fatLabel, sugarLabel, caffeineLabel, natriumLabel]
-    private lazy var nutritionNumberLabels: [UILabel] = [energyNumberLabel, carbohydrateNumberLabel, proteinNumberLabel, fatNumberLabel, sugarNumberLabel, caffeineNumberLabel, natriumNumberLabel]
+    private lazy var nutritionNumberViews: [HighlightNumberView] = [energyNumberView, carbohydrateNumberView, proteinNumberView, fatNumberView, sugarNumberView, caffeineNumberView, natriumNumberView]
     private let nutritionLabelText: [String] = ["열량", "탄수화물", "단백질", "지방", "당류", "카페인", "나트륨"]
     private let energyLabel = NutritionPaddingLabel()
     private let carbohydrateLabel = NutritionPaddingLabel()
@@ -76,13 +92,13 @@ class FoodCell: SwipeCollectionViewCell {
     private let sugarLabel = NutritionPaddingLabel()
     private let caffeineLabel = NutritionPaddingLabel()
     private let natriumLabel = NutritionPaddingLabel()
-    private let energyNumberLabel = UILabel()
-    private let carbohydrateNumberLabel = UILabel()
-    private let proteinNumberLabel = UILabel()
-    private let fatNumberLabel = UILabel()
-    private let sugarNumberLabel = UILabel()
-    private let caffeineNumberLabel = UILabel()
-    private let natriumNumberLabel = UILabel()
+    private let energyNumberView = HighlightNumberView(.energy)
+    private let carbohydrateNumberView = HighlightNumberView(.carbohydrate)
+    private let proteinNumberView = HighlightNumberView(.protein)
+    private let fatNumberView = HighlightNumberView(.fat)
+    private let sugarNumberView = HighlightNumberView(.sugar)
+    private let caffeineNumberView = HighlightNumberView(.caffeine)
+    private let natriumNumberView = HighlightNumberView(.natrium)
     private let disclosureIndicator: UIImageView = {
         let disclosureIndicator = UIImageView()
         disclosureIndicator.image = UIImage(named: "Indicator")
@@ -93,12 +109,6 @@ class FoodCell: SwipeCollectionViewCell {
     }()
     
     // StackViews
-    private lazy var rootStack: UIStackView = {
-        let rootStack = UIStackView(arrangedSubviews: [labelStack])
-        rootStack.alignment = .top
-        rootStack.distribution = .fillProportionally
-        return rootStack
-    }()
     private lazy var labelStack: UIStackView = {
         let labelStack = UIStackView(arrangedSubviews: [
             titleContentStackView,
@@ -106,8 +116,10 @@ class FoodCell: SwipeCollectionViewCell {
             servingLabel,
             nutritionRootStackView
         ])
+        labelStack.alignment = .top
         labelStack.axis = .vertical
         labelStack.spacing = labelPadding
+        labelStack.distribution = .fillProportionally
         return labelStack
     }()
     private lazy var titleContentStackView: UIStackView = {
@@ -162,13 +174,13 @@ class FoodCell: SwipeCollectionViewCell {
         return nutritionRightStackView
     }()
     private lazy var nutritionLeftNumberStackView: UIStackView = {
-        let nutritionLeftStackView = UIStackView(arrangedSubviews: [energyNumberLabel, carbohydrateNumberLabel, proteinNumberLabel, natriumNumberLabel])
+        let nutritionLeftStackView = UIStackView(arrangedSubviews: [energyNumberView, carbohydrateNumberView, proteinNumberView, natriumNumberView])
         nutritionLeftStackView.axis = .vertical
         nutritionLeftStackView.spacing = 10
         return nutritionLeftStackView
     }()
     private lazy var nutritionRightNumberStackView: UIStackView = {
-        let nutritionRightStackView = UIStackView(arrangedSubviews: [fatNumberLabel, sugarNumberLabel, caffeineNumberLabel])
+        let nutritionRightStackView = UIStackView(arrangedSubviews: [fatNumberView, sugarNumberView, caffeineNumberView])
         nutritionRightStackView.axis = .vertical
         nutritionRightStackView.spacing = 10
         return nutritionRightStackView
@@ -195,6 +207,12 @@ class FoodCell: SwipeCollectionViewCell {
         super.init(frame: frame)
         setUp()
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        highlightItem = nil
+    }
+    
     private func setUp() {
         configureUI()
         setUpConstraints()
@@ -216,13 +234,13 @@ class FoodCell: SwipeCollectionViewCell {
             label.layer.cornerRadius = 12
             label.layer.masksToBounds = true
         }
-        nutritionNumberLabels.enumerated().forEach{(index, label) in
-            label.textAlignment = .center
+        nutritionNumberViews.enumerated().forEach{(index, numberView) in
+            numberView.numberLabel.textAlignment = .center
         }
     }
     
     private func setUpConstraints() {
-        contentView.addSubview(rootStack)
+        contentView.addSubview(labelStack)
         contentView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: topAnchor),
@@ -231,11 +249,11 @@ class FoodCell: SwipeCollectionViewCell {
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
         
-        rootStack.translatesAutoresizingMaskIntoConstraints = false
+        labelStack.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            rootStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 22),
-            rootStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: rootPadding),
-            rootStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -rootPadding),
+            labelStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 22),
+            labelStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: rootPadding),
+            labelStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -rootPadding),
         ])
         
         foodCategoryImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -256,37 +274,37 @@ class FoodCell: SwipeCollectionViewCell {
         contentView.addSubview(seperatorView)
         seperatorView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            seperatorView.widthAnchor.constraint(equalTo: rootStack.widthAnchor),
+            seperatorView.widthAnchor.constraint(equalTo: labelStack.widthAnchor),
             seperatorView.heightAnchor.constraint(equalToConstant: 1),
-            seperatorView.centerXAnchor.constraint(equalTo: rootStack.centerXAnchor),
+            seperatorView.centerXAnchor.constraint(equalTo: labelStack.centerXAnchor),
             seperatorView.centerYAnchor.constraint(equalTo: spacerView.centerYAnchor)
         ])
         
-        energyNumberLabel.translatesAutoresizingMaskIntoConstraints = false
-        carbohydrateNumberLabel.translatesAutoresizingMaskIntoConstraints = false
-        proteinNumberLabel.translatesAutoresizingMaskIntoConstraints = false
-        fatNumberLabel.translatesAutoresizingMaskIntoConstraints = false
-        sugarNumberLabel.translatesAutoresizingMaskIntoConstraints = false
-        caffeineNumberLabel.translatesAutoresizingMaskIntoConstraints = false
-        natriumNumberLabel.translatesAutoresizingMaskIntoConstraints = false
+        energyNumberView.translatesAutoresizingMaskIntoConstraints = false
+        carbohydrateNumberView.translatesAutoresizingMaskIntoConstraints = false
+        proteinNumberView.translatesAutoresizingMaskIntoConstraints = false
+        fatNumberView.translatesAutoresizingMaskIntoConstraints = false
+        sugarNumberView.translatesAutoresizingMaskIntoConstraints = false
+        caffeineNumberView.translatesAutoresizingMaskIntoConstraints = false
+        natriumNumberView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            energyNumberLabel.centerYAnchor.constraint(equalTo: energyLabel.centerYAnchor),
-            carbohydrateNumberLabel.centerYAnchor.constraint(equalTo: carbohydrateLabel.centerYAnchor),
-            proteinNumberLabel.centerYAnchor.constraint(equalTo: proteinLabel.centerYAnchor),
-            fatNumberLabel.centerYAnchor.constraint(equalTo: fatLabel.centerYAnchor),
-            sugarNumberLabel.centerYAnchor.constraint(equalTo: sugarLabel.centerYAnchor),
-            caffeineNumberLabel.centerYAnchor.constraint(equalTo: caffeineLabel.centerYAnchor),
-            natriumNumberLabel.centerYAnchor.constraint(equalTo: natriumLabel.centerYAnchor)
+            energyNumberView.centerYAnchor.constraint(equalTo: energyLabel.centerYAnchor),
+            carbohydrateNumberView.centerYAnchor.constraint(equalTo: carbohydrateLabel.centerYAnchor),
+            proteinNumberView.centerYAnchor.constraint(equalTo: proteinLabel.centerYAnchor),
+            fatNumberView.centerYAnchor.constraint(equalTo: fatLabel.centerYAnchor),
+            sugarNumberView.centerYAnchor.constraint(equalTo: sugarLabel.centerYAnchor),
+            caffeineNumberView.centerYAnchor.constraint(equalTo: caffeineLabel.centerYAnchor),
+            natriumNumberView.centerYAnchor.constraint(equalTo: natriumLabel.centerYAnchor)
         ])
         
         nutritionLeftLabelStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            nutritionLeftLabelStackView.widthAnchor.constraint(equalTo: rootStack.widthAnchor, multiplier: 0.2)
+            nutritionLeftLabelStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2)
         ])
         
         nutritionRightLabelStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            nutritionRightLabelStackView.widthAnchor.constraint(equalTo: rootStack.widthAnchor, multiplier: 0.2)
+            nutritionRightLabelStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.2)
         ])
         
         closedConstraint =
@@ -321,28 +339,31 @@ class FoodCell: SwipeCollectionViewCell {
         let sugarNumberLabelText = "\(food.sugar.getOneDigitString())g"
         let caffeineNumberLabelText = "\(food.caffeine.getOneDigitString())mg"
         let natriumNumberLabelText = "\(food.natrium.getOneDigitString())mg"
-        energyNumberLabel.attributedText = makeRobotoAttributeString(energyNumberLabelText)
-        carbohydrateNumberLabel.attributedText = makeRobotoAttributeString(carbohydrateNumberLabelText)
-        proteinNumberLabel.attributedText = makeRobotoAttributeString(proteinNumberLabelText)
-        fatNumberLabel.attributedText = makeRobotoAttributeString(fatNumberLabelText)
-        sugarNumberLabel.attributedText = makeRobotoAttributeString(sugarNumberLabelText)
-        caffeineNumberLabel.attributedText = makeRobotoAttributeString(caffeineNumberLabelText)
-        natriumNumberLabel.attributedText = makeRobotoAttributeString(natriumNumberLabelText)
+        energyNumberView.numberLabel.attributedText = makeRobotoAttributeString(energyNumberLabelText)
+        carbohydrateNumberView.numberLabel.attributedText = makeRobotoAttributeString(carbohydrateNumberLabelText)
+        proteinNumberView.numberLabel.attributedText = makeRobotoAttributeString(proteinNumberLabelText)
+        fatNumberView.numberLabel.attributedText = makeRobotoAttributeString(fatNumberLabelText)
+        sugarNumberView.numberLabel.attributedText = makeRobotoAttributeString(sugarNumberLabelText)
+        caffeineNumberView.numberLabel.attributedText = makeRobotoAttributeString(caffeineNumberLabelText)
+        natriumNumberView.numberLabel.attributedText = makeRobotoAttributeString(natriumNumberLabelText)
         
-        subtitleLabel.text = food.category
         switch food.category {
         case "기타 빵류", "샌드위치류", "식빵류":
             let categoryImage = UIImage(named: "빵류")
             foodCategoryImageView.image = categoryImage
+            subtitleLabel.text = "빵류"
         case "과일 채소음료류", "기타 음료류", "스무디류", "차류", "커피류", "탄산음료류":
             let categoryImage = UIImage(named: "음료류")
             foodCategoryImageView.image = categoryImage
+            subtitleLabel.text = "음료류"
         case "기타 음식류", "튀김류", "피자류":
             let categoryImage = UIImage(named: "음식류")
             foodCategoryImageView.image = categoryImage
+            subtitleLabel.text = "음식류"
         case "아이스크림류", "페이스트리류", "케이크류", "과자류":
             let categoryImage = UIImage(named: "디저트류")
             foodCategoryImageView.image = categoryImage
+            subtitleLabel.text = "디저트류"
         default:
             print("none")
         }
@@ -379,26 +400,19 @@ extension FoodCell: UICollectionViewCellHighlight {
     func highlightNutritionLabel(nutrition: NutritionName, isActive: Bool) {
         switch nutrition {
         case .energy:
-            energyNumberLabel.backgroundColor = isActive ? .gray : .white
-            energyNumberLabel.textColor = isActive ? .white : .black
+            energyNumberView.highlightUIView.alpha = isActive ? 1 : 0
         case .protein:
-            proteinNumberLabel.backgroundColor = isActive ? .gray : .white
-            proteinNumberLabel.textColor = isActive ? .white : .black
+            proteinNumberView.highlightUIView.alpha = isActive ? 1 : 0
         case .fat:
-            fatNumberLabel.backgroundColor = isActive ? .gray : .white
-            fatNumberLabel.textColor = isActive ? .white : .black
+            fatNumberView.highlightUIView.alpha = isActive ? 1 : 0
         case .carbohydrate:
-            carbohydrateNumberLabel.backgroundColor = isActive ? .gray : .white
-            carbohydrateNumberLabel.textColor = isActive ? .white : .black
+            carbohydrateNumberView.highlightUIView.alpha = isActive ? 1 : 0
         case .sugar:
-            sugarNumberLabel.backgroundColor = isActive ? .gray : .white
-            sugarNumberLabel.textColor = isActive ? .white : .black
+            sugarNumberView.highlightUIView.alpha = isActive ? 1 : 0
         case .natrium:
-            natriumNumberLabel.backgroundColor = isActive ? .gray : .white
-            natriumNumberLabel.textColor = isActive ? .white : .black
+            natriumNumberView.highlightUIView.alpha = isActive ? 1 : 0
         case .caffeine:
-            caffeineNumberLabel.backgroundColor = isActive ? .gray : .white
-            caffeineNumberLabel.textColor = isActive ? .white : .black
+            caffeineNumberView.highlightUIView.alpha = isActive ? 1 : 0
         }
     }
 }

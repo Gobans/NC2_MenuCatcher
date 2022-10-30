@@ -173,6 +173,24 @@ final class ViewController: UIViewController {
             cell.delegate = self
             cell.tooltipDelegate = self
             cell.isSwipeDeleting = false
+            if let currentHilighted = self.filterScorllView.highlightNutrition {
+                switch currentHilighted {
+                case .energy:
+                    cell.highlightItem = .energy
+                case .carbohydrate:
+                    cell.highlightItem = .carbohydrate
+                case .protein:
+                    cell.highlightItem = .protein
+                case .fat:
+                    cell.highlightItem = .fat
+                case .sugar:
+                    cell.highlightItem = .sugar
+                case .natrium:
+                    cell.highlightItem = .natrium
+                case .caffeine:
+                    cell.highlightItem = .caffeine
+                }
+            }
             return cell
         }
         collectionView.dataSource = dataSource
@@ -227,8 +245,8 @@ final class ViewController: UIViewController {
         NSLayoutConstraint.activate([
             singleScanButton.bottomAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.bottomAnchor, constant: -30),
             singleScanButton.trailingAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.trailingAnchor, constant: -30),
-            singleScanButton.heightAnchor.constraint(equalToConstant: 76),
-            singleScanButton.widthAnchor.constraint(equalToConstant: 76)
+            singleScanButton.heightAnchor.constraint(equalToConstant: 70),
+            singleScanButton.widthAnchor.constraint(equalToConstant: 70)
         ])
     }
     
@@ -265,6 +283,7 @@ final class ViewController: UIViewController {
             if var food = await sqlite.fetchFoodDataByName(tableName: simliarFoodTable, foodName: simliarFoodName) {
                 food.recognizedText = foodName
                 foodDataArray.insert(food, at: foodInsertIndex)
+                collectionView.initialUIView.isHidden = true
                 foodInsertIndex += 1
                 DispatchQueue.main.async {
                     self.updateFoodDataSource()
@@ -284,7 +303,6 @@ final class ViewController: UIViewController {
             self.catchSinggleLabel.alpha = 1
         }, completion: { _ in
             UIView.animate(withDuration: 0.5, delay: 1, animations: {
-                self.catchSinggleLabel.frame.origin.y -= 10
                 self.catchSinggleLabel.alpha = 0.4
             }, completion: { isSucceced in
                 
@@ -302,6 +320,13 @@ final class ViewController: UIViewController {
         }
         Task {
             await endScan(splitedStringArray: splitedStringArray)
+            if foodDataArray.isEmpty {
+                collectionView.initialImageView.image = UIImage(named: "Alertfrok")
+                var paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.lineHeightMultiple = 1.19
+                collectionView.initialLabel.attributedText = NSMutableAttributedString(string: "스캔정보가 없네요!\n다시 한 번 스캔해주세요", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                collectionView.initialLabel.textAlignment = .center
+            }
         }
         dataSingleScannerViewController.dismiss(animated: true)
         dataSingleScannerViewController.stopScanning()
@@ -384,6 +409,15 @@ extension ViewController: SwipeCollectionViewCellDelegate {
             snapshot.appendSections([.main])
             snapshot.appendItems(self.foodDataArray)
             self.dataSource?.apply(snapshot, animatingDifferences: true)
+            let initialView = collectionView as? FoodCollectionView
+            initialView?.initialUIView.isHidden = self.foodDataArray.isEmpty ? false : true
+            if self.foodDataArray.isEmpty {
+                self.collectionView.initialImageView.image = UIImage(named: "NoData")
+                var paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.lineHeightMultiple = 1.33
+                self.collectionView.initialLabel.attributedText = NSMutableAttributedString(string: "아래 버튼을 눌러 메뉴를 스캔해요", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+                self.collectionView.initialLabel.textAlignment = .center
+            }
         }
         // customize the action appearance
         let deleteImageWithColor = UIImage(systemName: "trash.fill")?.withTintColor(UIColor(hexString: "#F3645B"), renderingMode: .alwaysOriginal)
