@@ -32,6 +32,7 @@ class FilterScrollView: UIScrollView {
     private lazy var natriumButton = UIButton(configuration: insetConfiguration)
     private let nutritionLabelText: [String] = ["열량", "탄수화물", "단백질", "지방", "당류","카페인", "나트륨"]
     private lazy var nutritionButtons: [UIButton] = [energyButton, carbohydrateButton, proteinButton, fatButton, sugarButton,caffeineButton, natriumButton]
+    var highlightNutrition: NutritionName?
     
     lazy var currentHilightedButton: UIButton? = nil
     
@@ -39,53 +40,45 @@ class FilterScrollView: UIScrollView {
         sender.isSelected.toggle()
         sender.tintColor = sender.isSelected ? .black : .white
         guard let senderTitle = sender.currentAttributedTitle?.string else {return}
-        let isActive = sender.isSelected
-        switch senderTitle {
-        case "열량":
-            highlightDelegate?.highlightCells(nutrition: NutritionName.energy, isActive: isActive)
-        case "탄수화물":
-            highlightDelegate?.highlightCells(nutrition: NutritionName.carbohydrate, isActive: isActive)
-        case "단백질":
-            highlightDelegate?.highlightCells(nutrition: NutritionName.protein, isActive: isActive)
-        case "지방":
-            highlightDelegate?.highlightCells(nutrition: NutritionName.fat, isActive: isActive)
-        case "당류":
-            highlightDelegate?.highlightCells(nutrition: NutritionName.sugar, isActive: isActive)
-        case "나트륨":
-            highlightDelegate?.highlightCells(nutrition: NutritionName.natrium, isActive: isActive)
-        case "카페인":
-            highlightDelegate?.highlightCells(nutrition: NutritionName.caffeine, isActive: isActive)
-        default:
-            print("error")
-        }
-        guard let currentHilighted = currentHilightedButton else {
-            currentHilightedButton = sender
+        if sender == currentHilightedButton {
+            highlightDelegate?.disableHighlightCells()
+            currentHilightedButton = nil
+            highlightNutrition = nil
             return
-        }
-        if currentHilighted != sender {
-            guard let currentHilightedTitle = currentHilighted.currentAttributedTitle?.string else {return}
-            switch currentHilightedTitle {
+        } else {
+            switch senderTitle {
             case "열량":
-                highlightDelegate?.highlightCells(nutrition: NutritionName.energy, isActive: false)
+                highlightDelegate?.highlightCells(nutrition: NutritionName.energy)
+                highlightNutrition = .energy
             case "탄수화물":
-                highlightDelegate?.highlightCells(nutrition: NutritionName.carbohydrate, isActive: false)
+                highlightDelegate?.highlightCells(nutrition: NutritionName.carbohydrate)
+                highlightNutrition = .carbohydrate
             case "단백질":
-                highlightDelegate?.highlightCells(nutrition: NutritionName.protein, isActive: false)
+                highlightDelegate?.highlightCells(nutrition: NutritionName.protein)
+                highlightNutrition = .protein
             case "지방":
-                highlightDelegate?.highlightCells(nutrition: NutritionName.fat, isActive: false)
-            case "나트륨":
-                highlightDelegate?.highlightCells(nutrition: NutritionName.natrium, isActive: false)
+                highlightDelegate?.highlightCells(nutrition: NutritionName.fat)
+                highlightNutrition = .fat
             case "당류":
-                highlightDelegate?.highlightCells(nutrition: NutritionName.sugar, isActive: false)
+                highlightDelegate?.highlightCells(nutrition: NutritionName.sugar)
+                highlightNutrition = .sugar
+            case "나트륨":
+                highlightDelegate?.highlightCells(nutrition: NutritionName.natrium)
+                highlightNutrition = .natrium
             case "카페인":
-                highlightDelegate?.highlightCells(nutrition: NutritionName.caffeine, isActive: false)
+                highlightDelegate?.highlightCells(nutrition: NutritionName.caffeine)
+                highlightNutrition = .caffeine
             default:
                 print("error")
             }
-            currentHilighted.isSelected = false
-            currentHilighted.tintColor = .white
-            currentHilightedButton = sender
         }
+        guard let hilightedButton = currentHilightedButton else {
+            currentHilightedButton = sender
+            return
+        }
+        hilightedButton.isSelected = false
+        hilightedButton.tintColor = .white
+        currentHilightedButton = sender
     }
     
     override init(frame: CGRect) {

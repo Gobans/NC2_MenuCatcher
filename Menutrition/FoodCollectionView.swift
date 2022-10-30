@@ -9,7 +9,7 @@ import UIKit
 
 class FoodCollectionView: UICollectionView {
     lazy var initialUIView: UIView = {
-       let uiView = UIView()
+        let uiView = UIView()
         return uiView
     }()
     let initialImageView: UIImageView = {
@@ -38,7 +38,7 @@ class FoodCollectionView: UICollectionView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func allFoodCells() -> [FoodCell] {
+    func allFoodCells() async -> [FoodCell] {
         var cells = [FoodCell]()
         for i in 0...self.numberOfSections-1
         {
@@ -81,14 +81,25 @@ class FoodCollectionView: UICollectionView {
 }
 
 extension FoodCollectionView: EnableHighlightCells {
-    func highlightCells(nutrition: NutritionName, isActive: Bool) {
-        let foodCells = self.allFoodCells()
-        foodCells.forEach{ foodCell in
-            foodCell.highlightNutritionLabel(nutrition: nutrition, isActive: isActive)
+    func highlightCells(nutrition: NutritionName) {
+        Task {
+            let foodCells = await self.allFoodCells()
+            foodCells.forEach{ foodCell in
+                foodCell.highlightItem = nutrition
+            }
+        }
+    }
+    func disableHighlightCells() {
+        Task{
+            let foodCells = await self.allFoodCells()
+            foodCells.forEach{ foodCell in
+                foodCell.highlightItem = nil
+            }
         }
     }
 }
 
 protocol EnableHighlightCells {
-    func highlightCells(nutrition: NutritionName, isActive: Bool)
+    func highlightCells(nutrition: NutritionName)
+    func disableHighlightCells()
 }

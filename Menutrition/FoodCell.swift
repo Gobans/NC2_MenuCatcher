@@ -16,7 +16,6 @@ protocol EnableDisplayToolTipView {
     func displayToolTip(centerX: NSLayoutXAxisAnchor, topAnchor: NSLayoutYAxisAnchor, recognizedText: String)
 }
 
-
 class FoodCell: SwipeCollectionViewCell {
     static let identifier = "FoodCollectionViewCell"
     
@@ -24,6 +23,23 @@ class FoodCell: SwipeCollectionViewCell {
     var food: Food? { didSet { updateContent() } }
     override var isSelected: Bool { didSet { updateAppearance() } }
     var isSwipeDeleting: Bool = false
+    var highlightItem: NutritionName? {
+        willSet {
+            guard let newValue else {
+                nutritionNumberViews.forEach { HighlightNumberView in
+                    HighlightNumberView.highlightUIView.alpha = 0
+                }
+                return
+            }
+            nutritionNumberViews.forEach { HighlightNumberView in
+                if HighlightNumberView.distinct == newValue {
+                    HighlightNumberView.highlightUIView.alpha = 1
+                } else {
+                    HighlightNumberView.highlightUIView.alpha = 0
+                }
+            }
+        }
+    }
     
     // Views
     private let foodCategoryImageView: UIImageView = {
@@ -76,13 +92,13 @@ class FoodCell: SwipeCollectionViewCell {
     private let sugarLabel = NutritionPaddingLabel()
     private let caffeineLabel = NutritionPaddingLabel()
     private let natriumLabel = NutritionPaddingLabel()
-    private let energyNumberView = HighlightNumberView()
-    private let carbohydrateNumberView = HighlightNumberView()
-    private let proteinNumberView = HighlightNumberView()
-    private let fatNumberView = HighlightNumberView()
-    private let sugarNumberView = HighlightNumberView()
-    private let caffeineNumberView = HighlightNumberView()
-    private let natriumNumberView = HighlightNumberView()
+    private let energyNumberView = HighlightNumberView(.energy)
+    private let carbohydrateNumberView = HighlightNumberView(.carbohydrate)
+    private let proteinNumberView = HighlightNumberView(.protein)
+    private let fatNumberView = HighlightNumberView(.fat)
+    private let sugarNumberView = HighlightNumberView(.sugar)
+    private let caffeineNumberView = HighlightNumberView(.caffeine)
+    private let natriumNumberView = HighlightNumberView(.natrium)
     private let disclosureIndicator: UIImageView = {
         let disclosureIndicator = UIImageView()
         disclosureIndicator.image = UIImage(named: "Indicator")
@@ -194,13 +210,7 @@ class FoodCell: SwipeCollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        energyNumberView.highlightUIView.alpha = 0
-        proteinNumberView.highlightUIView.alpha = 0
-        fatNumberView.highlightUIView.alpha = 0
-        carbohydrateNumberView.highlightUIView.alpha = 0
-        sugarNumberView.highlightUIView.alpha = 0
-        natriumNumberView.highlightUIView.alpha = 0
-        caffeineNumberView.highlightUIView.alpha = 0
+        highlightItem = nil
     }
     
     private func setUp() {

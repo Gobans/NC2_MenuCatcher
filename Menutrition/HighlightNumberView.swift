@@ -11,8 +11,10 @@ import UIKit
 class HighlightNumberView: UIView {
     let numberLabel = UILabel()
     let highlightUIView = UIView()
+    let distinct: NutritionName
     
-    init() {
+    init(_ distinct: NutritionName) {
+        self.distinct = distinct
         super.init(frame: .zero)
         configureUI()
         createLayout()

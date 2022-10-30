@@ -173,25 +173,22 @@ final class ViewController: UIViewController {
             cell.delegate = self
             cell.tooltipDelegate = self
             cell.isSwipeDeleting = false
-            if let currentHilighted = self.filterScorllView.currentHilightedButton {
-                guard let currentHilightedTitle = currentHilighted.currentAttributedTitle?.string else {return cell}
-                switch currentHilightedTitle {
-                case "열량":
-                    cell.highlightNutritionLabel(nutrition: NutritionName.energy, isActive: true)
-                case "탄수화물":
-                    cell.highlightNutritionLabel(nutrition: NutritionName.carbohydrate, isActive: true)
-                case "단백질":
-                    cell.highlightNutritionLabel(nutrition: NutritionName.protein, isActive: true)
-                case "지방":
-                    cell.highlightNutritionLabel(nutrition: NutritionName.fat, isActive: true)
-                case "나트륨":
-                    cell.highlightNutritionLabel(nutrition: NutritionName.natrium, isActive: true)
-                case "당류":
-                    cell.highlightNutritionLabel(nutrition: NutritionName.sugar, isActive: true)
-                case "카페인":
-                    cell.highlightNutritionLabel(nutrition: NutritionName.caffeine, isActive: true)
-                default:
-                    print("error")
+            if let currentHilighted = self.filterScorllView.highlightNutrition {
+                switch currentHilighted {
+                case .energy:
+                    cell.highlightItem = .energy
+                case .carbohydrate:
+                    cell.highlightItem = .carbohydrate
+                case .protein:
+                    cell.highlightItem = .protein
+                case .fat:
+                    cell.highlightItem = .fat
+                case .sugar:
+                    cell.highlightItem = .sugar
+                case .natrium:
+                    cell.highlightItem = .natrium
+                case .caffeine:
+                    cell.highlightItem = .caffeine
                 }
             }
             return cell
