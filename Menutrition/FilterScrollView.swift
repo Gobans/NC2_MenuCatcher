@@ -107,7 +107,7 @@ class FilterScrollView: UIScrollView {
             ]), for: .normal)
             button.titleLabel?.textAlignment = .center
             button.tintColor = .white
-            button.backgroundColor = UIColor(hexString: "#D9D9D9")
+            button.backgroundColor = UIColor(hexString: "#BFBFBF")
             button.layer.cornerRadius = 12
             button.layer.masksToBounds = true
             button.addTarget(self, action: #selector(filterNutrition(_:)), for: .touchUpInside)

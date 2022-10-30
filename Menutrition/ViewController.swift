@@ -227,8 +227,8 @@ final class ViewController: UIViewController {
         NSLayoutConstraint.activate([
             singleScanButton.bottomAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.bottomAnchor, constant: -30),
             singleScanButton.trailingAnchor.constraint(equalTo: collectionView.layoutMarginsGuide.trailingAnchor, constant: -30),
-            singleScanButton.heightAnchor.constraint(equalToConstant: 76),
-            singleScanButton.widthAnchor.constraint(equalToConstant: 76)
+            singleScanButton.heightAnchor.constraint(equalToConstant: 70),
+            singleScanButton.widthAnchor.constraint(equalToConstant: 70)
         ])
     }
     
@@ -396,7 +396,7 @@ extension ViewController: SwipeCollectionViewCellDelegate {
             if self.foodDataArray.isEmpty {
                 self.collectionView.initialImageView.image = UIImage(named: "NoData")
                 var paragraphStyle = NSMutableParagraphStyle()
-                paragraphStyle.lineHeightMultiple = 1.19
+                paragraphStyle.lineHeightMultiple = 1.33
                 self.collectionView.initialLabel.attributedText = NSMutableAttributedString(string: "아래 버튼을 눌러 메뉴를 스캔해요", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
                 self.collectionView.initialLabel.textAlignment = .center
             }

@@ -20,10 +20,10 @@ class FoodCollectionView: UICollectionView {
     }()
     let initialLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 14)
-        label.textColor = UIColor(hexString: "background: #868686")
+        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 15)
+        label.textColor = UIColor(hexString: "#868686")
         var paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 1.19
+        paragraphStyle.lineHeightMultiple = 1.33
         label.attributedText = NSMutableAttributedString(string: "아래 버튼을 눌러 메뉴를 스캔해요", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.textAlignment = .center
         label.numberOfLines = 2
