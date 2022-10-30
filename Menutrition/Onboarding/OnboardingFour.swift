@@ -22,7 +22,7 @@ final class OnboardingFour: UIViewController {
         label.numberOfLines = 4
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.25
-        label.attributedText = NSMutableAttributedString(string: "메뉴캐쳐와 함께\n스캔하러 가볼까요?", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.attributedText = NSMutableAttributedString(string: "메뉴캐처와 함께\n스캔하러 가볼까요?", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.textAlignment = .center
         return label
     }()
