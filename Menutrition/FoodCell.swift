@@ -192,6 +192,17 @@ class FoodCell: SwipeCollectionViewCell {
         setUp()
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        energyNumberView.highlightUIView.alpha = 0
+        proteinNumberView.highlightUIView.alpha = 0
+        fatNumberView.highlightUIView.alpha = 0
+        carbohydrateNumberView.highlightUIView.alpha = 0
+        sugarNumberView.highlightUIView.alpha = 0
+        natriumNumberView.highlightUIView.alpha = 0
+        caffeineNumberView.highlightUIView.alpha = 0
+    }
+    
     private func setUp() {
         configureUI()
         setUpConstraints()

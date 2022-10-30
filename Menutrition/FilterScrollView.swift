@@ -33,7 +33,7 @@ class FilterScrollView: UIScrollView {
     private let nutritionLabelText: [String] = ["열량", "탄수화물", "단백질", "지방", "당류","카페인", "나트륨"]
     private lazy var nutritionButtons: [UIButton] = [energyButton, carbohydrateButton, proteinButton, fatButton, sugarButton,caffeineButton, natriumButton]
     
-    private lazy var currentHilightedButton: UIButton? = nil
+    lazy var currentHilightedButton: UIButton? = nil
     
     @objc private func filterNutrition(_ sender: UIButton) {
         sender.isSelected.toggle()
