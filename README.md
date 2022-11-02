@@ -34,6 +34,10 @@ xcode 14.0
 SQLite.swift 0.13.3   
 SwipeCellKit 2.7.1
 
-## 개발 기록
+## :lock_with_ink_pen: License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
+## 📚 개발 기록
 
 [Notion](https://rigorous-babcat-63a.notion.site/NC2-4f452310d5cd43559b3507337e794a15)
