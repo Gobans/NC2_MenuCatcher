@@ -31,7 +31,7 @@ iOS 16.0
 xcode 14.0
 
 [SPM]
-SQLite.swift 0.13.3
+SQLite.swift 0.13.3   
 SwipeCellKit 2.7.1
 
 ## 개발 기록
