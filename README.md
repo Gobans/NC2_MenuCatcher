@@ -29,8 +29,8 @@ iOS 16.0
 
 ## built by
 xcode 14.0
-
-[SPM]
+   
+[SPM]   
 SQLite.swift 0.13.3   
 SwipeCellKit 2.7.1
 
