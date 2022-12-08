@@ -40,4 +40,4 @@ SwipeCellKit 2.7.1
 
 ## 📚 개발 기록
 
-[Notion]()
+[Notion](https://gobans.notion.site/NC2-4f452310d5cd43559b3507337e794a15)
