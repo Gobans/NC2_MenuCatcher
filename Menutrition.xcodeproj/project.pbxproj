@@ -39,7 +39,6 @@
 		91DAF93F28E32898009A4880 /* CategoryPaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91DAF93E28E32898009A4880 /* CategoryPaddingLabel.swift */; };
 		91DDE30528E8224F0057ED00 /* SwipeCellKit in Frameworks */ = {isa = PBXBuildFile; productRef = 91DDE30428E8224F0057ED00 /* SwipeCellKit */; };
 		91E75AE628D5F5E4003EF1DC /* NutritionPaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E75AE528D5F5E4003EF1DC /* NutritionPaddingLabel.swift */; };
-		91E75AE828D61A38003EF1DC /* OnePXLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E75AE728D61A38003EF1DC /* OnePXLine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,7 +74,6 @@
 		91DAF93C28E2E1C8009A4880 /* FilterScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterScrollView.swift; sourceTree = "<group>"; };
 		91DAF93E28E32898009A4880 /* CategoryPaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryPaddingLabel.swift; sourceTree = "<group>"; };
 		91E75AE528D5F5E4003EF1DC /* NutritionPaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionPaddingLabel.swift; sourceTree = "<group>"; };
-		91E75AE728D61A38003EF1DC /* OnePXLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePXLine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +89,78 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9121A070294CA98400496074 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				9121A071294CA98D00496074 /* CoreML */,
+				9121A076294CAA8500496074 /* DB */,
+				912AD21028C03AAC009525A5 /* Food.swift */,
+				911A0B4028BEFB2A007AC11E /* TextProcessing.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		9121A071294CA98D00496074 /* CoreML */ = {
+			isa = PBXGroup;
+			children = (
+				91A5A4EE28C88DB80046425A /* FoodCategoryClassfier.mlmodel */,
+			);
+			path = CoreML;
+			sourceTree = "<group>";
+		};
+		9121A072294CA9AF00496074 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9121A073294CA9BE00496074 /* FoodCollectionView */,
+				91D47EBA28FBEE360056E795 /* HighlightNumberView.swift */,
+				91DAF93C28E2E1C8009A4880 /* FilterScrollView.swift */,
+				915CE6C528B73AFA0009CBD6 /* ViewController.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9121A073294CA9BE00496074 /* FoodCollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				9184F15028E6D0B600C5A501 /* FoodCollectionView.swift */,
+				912AD21428C08D76009525A5 /* FoodCell.swift */,
+			);
+			path = FoodCollectionView;
+			sourceTree = "<group>";
+		};
+		9121A074294CA9F300496074 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				9184F15228E6D88900C5A501 /* Enum+Nutrition.swift */,
+				913848CD28F6BA6B000A4EA1 /* UIPageViewController+Extension.swift */,
+				913848BF28F68B87000A4EA1 /* UserDefaults+Extension.swift */,
+				91947BAB28D4AE4800772DF6 /* UIColor+Extension.swift */,
+				913BC61A28E9586A006FACFF /* UIView+Extension.swift */,
+				913BC61C28E95889006FACFF /* String+Extension.swift */,
+				913BC62028E9BA16006FACFF /* Double+Extension.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		9121A075294CAA5C00496074 /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				913BC61E28E95C40006FACFF /* ToolTipView.swift */,
+				91E75AE528D5F5E4003EF1DC /* NutritionPaddingLabel.swift */,
+				91DAF93E28E32898009A4880 /* CategoryPaddingLabel.swift */,
+			);
+			path = Component;
+			sourceTree = "<group>";
+		};
+		9121A076294CAA8500496074 /* DB */ = {
+			isa = PBXGroup;
+			children = (
+				9103E3F628BDBDCF0011F3E8 /* FoodDB.sqlite3 */,
+				9103E3F128BDACCC0011F3E8 /* Sqlite.swift */,
+			);
+			path = DB;
+			sourceTree = "<group>";
+		};
 		913848BE28F68654000A4EA1 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,34 +192,17 @@
 		915CE6C028B73AFA0009CBD6 /* Menutrition */ = {
 			isa = PBXGroup;
 			children = (
-				91A5A4EE28C88DB80046425A /* FoodCategoryClassfier.mlmodel */,
-				9103E3F128BDACCC0011F3E8 /* Sqlite.swift */,
-				911A0B4028BEFB2A007AC11E /* TextProcessing.swift */,
 				915CE6C128B73AFA0009CBD6 /* AppDelegate.swift */,
 				915CE6C328B73AFA0009CBD6 /* SceneDelegate.swift */,
-				915CE6C528B73AFA0009CBD6 /* ViewController.swift */,
-				91DAF93C28E2E1C8009A4880 /* FilterScrollView.swift */,
-				9184F15028E6D0B600C5A501 /* FoodCollectionView.swift */,
-				912AD21428C08D76009525A5 /* FoodCell.swift */,
-				912AD21028C03AAC009525A5 /* Food.swift */,
+				9121A072294CA9AF00496074 /* Views */,
+				9121A070294CA98400496074 /* Model */,
+				9121A074294CA9F300496074 /* Extension */,
+				9121A075294CAA5C00496074 /* Component */,
 				913848BE28F68654000A4EA1 /* Onboarding */,
-				915CE6C728B73AFA0009CBD6 /* Main.storyboard */,
 				915CE6CA28B73AFB0009CBD6 /* Assets.xcassets */,
+				915CE6C728B73AFA0009CBD6 /* Main.storyboard */,
 				915CE6CC28B73AFB0009CBD6 /* LaunchScreen.storyboard */,
 				915CE6CF28B73AFB0009CBD6 /* Info.plist */,
-				9103E3F628BDBDCF0011F3E8 /* FoodDB.sqlite3 */,
-				913BC61E28E95C40006FACFF /* ToolTipView.swift */,
-				9184F15228E6D88900C5A501 /* Enum+Nutrition.swift */,
-				91D47EBA28FBEE360056E795 /* HighlightNumberView.swift */,
-				91E75AE528D5F5E4003EF1DC /* NutritionPaddingLabel.swift */,
-				91DAF93E28E32898009A4880 /* CategoryPaddingLabel.swift */,
-				91E75AE728D61A38003EF1DC /* OnePXLine.swift */,
-				913848CD28F6BA6B000A4EA1 /* UIPageViewController+Extension.swift */,
-				913848BF28F68B87000A4EA1 /* UserDefaults+Extension.swift */,
-				91947BAB28D4AE4800772DF6 /* UIColor+Extension.swift */,
-				913BC61A28E9586A006FACFF /* UIView+Extension.swift */,
-				913BC61C28E95889006FACFF /* String+Extension.swift */,
-				913BC62028E9BA16006FACFF /* Double+Extension.swift */,
 			);
 			path = Menutrition;
 			sourceTree = "<group>";
@@ -248,7 +301,6 @@
 				913BC61D28E95889006FACFF /* String+Extension.swift in Sources */,
 				91DAF93D28E2E1C8009A4880 /* FilterScrollView.swift in Sources */,
 				913BC62128E9BA16006FACFF /* Double+Extension.swift in Sources */,
-				91E75AE828D61A38003EF1DC /* OnePXLine.swift in Sources */,
 				913848C228F69D69000A4EA1 /* OnboardingOne.swift in Sources */,
 				915CE6C428B73AFA0009CBD6 /* SceneDelegate.swift in Sources */,
 				91D47EBB28FBEE360056E795 /* HighlightNumberView.swift in Sources */,
