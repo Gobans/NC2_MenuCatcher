@@ -57,7 +57,7 @@ final class ViewController: UIViewController {
         button.addTarget(self, action: #selector(startSinggleScanning), for: .touchUpInside)
         button.tintColor = .white
         button.backgroundColor = .black
-        button.layer.cornerRadius = 0.5 * 76
+        button.layer.cornerRadius = 0.5 * 70
         return button
     }()
     
